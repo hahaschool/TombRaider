@@ -20,8 +20,8 @@
 		E0969ECB1C6E484800932AA0 /* TREnemy.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E0969EC91C6E484800932AA0 /* TREnemy.cpp */; };
 		E0969ECE1C6E48AD00932AA0 /* TRSprite.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E0969ECC1C6E48AD00932AA0 /* TRSprite.cpp */; };
 		E0969ED11C6E4CD600932AA0 /* TRGameController.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E0969ECF1C6E4CD600932AA0 /* TRGameController.cpp */; };
-		E0F931F11C6FA9EE006ED7E3 /* TRGrider.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E0F931EF1C6FA9EE006ED7E3 /* TRGrider.cpp */; };
 		E0F931F41C7083F4006ED7E3 /* TRPathFinder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E0F931F21C7083F4006ED7E3 /* TRPathFinder.cpp */; };
+		E0F931F71C70BFC6006ED7E3 /* TRGrider.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E0F931F51C70BFC6006ED7E3 /* TRGrider.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -60,10 +60,10 @@
 		E0969ECD1C6E48AD00932AA0 /* TRSprite.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = TRSprite.hpp; sourceTree = "<group>"; };
 		E0969ECF1C6E4CD600932AA0 /* TRGameController.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TRGameController.cpp; sourceTree = "<group>"; };
 		E0969ED01C6E4CD600932AA0 /* TRGameController.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = TRGameController.hpp; sourceTree = "<group>"; };
-		E0F931EF1C6FA9EE006ED7E3 /* TRGrider.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TRGrider.cpp; path = ../TRGrider.cpp; sourceTree = "<group>"; };
-		E0F931F01C6FA9EE006ED7E3 /* TRGrider.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = TRGrider.hpp; path = ../TRGrider.hpp; sourceTree = "<group>"; };
 		E0F931F21C7083F4006ED7E3 /* TRPathFinder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TRPathFinder.cpp; sourceTree = "<group>"; };
 		E0F931F31C7083F4006ED7E3 /* TRPathFinder.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = TRPathFinder.hpp; sourceTree = "<group>"; };
+		E0F931F51C70BFC6006ED7E3 /* TRGrider.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TRGrider.cpp; sourceTree = "<group>"; };
+		E0F931F61C70BFC6006ED7E3 /* TRGrider.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = TRGrider.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -103,8 +103,8 @@
 			isa = PBXGroup;
 			children = (
 				E0969EAA1C6CEC2000932AA0 /* main.cpp */,
-				E0F931EF1C6FA9EE006ED7E3 /* TRGrider.cpp */,
-				E0F931F01C6FA9EE006ED7E3 /* TRGrider.hpp */,
+				E0F931F51C70BFC6006ED7E3 /* TRGrider.cpp */,
+				E0F931F61C70BFC6006ED7E3 /* TRGrider.hpp */,
 				E0F931F21C7083F4006ED7E3 /* TRPathFinder.cpp */,
 				E0F931F31C7083F4006ED7E3 /* TRPathFinder.hpp */,
 				E0969ECF1C6E4CD600932AA0 /* TRGameController.cpp */,
@@ -189,6 +189,7 @@
 				E0969EB61C6D9BB000932AA0 /* TRObject.cpp in Sources */,
 				E0969EC51C6E390000932AA0 /* TRHero.cpp in Sources */,
 				E0969ECE1C6E48AD00932AA0 /* TRSprite.cpp in Sources */,
+				E0F931F71C70BFC6006ED7E3 /* TRGrider.cpp in Sources */,
 				E0F931F41C7083F4006ED7E3 /* TRPathFinder.cpp in Sources */,
 				E0969EAB1C6CEC2000932AA0 /* main.cpp in Sources */,
 				E0969EC21C6E1E7B00932AA0 /* TRAnimator.cpp in Sources */,
@@ -196,7 +197,6 @@
 				E0969ED11C6E4CD600932AA0 /* TRGameController.cpp in Sources */,
 				E0969EB31C6D9B9200932AA0 /* TRTexture.cpp in Sources */,
 				E0969EBF1C6DDF1700932AA0 /* TRTimer.cpp in Sources */,
-				E0F931F11C6FA9EE006ED7E3 /* TRGrider.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
