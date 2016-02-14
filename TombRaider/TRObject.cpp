@@ -56,7 +56,7 @@ void TRObject::setCurClip(SDL_Rect clipRect){
 }
 
 void TRObject::render(){
-    mTexture->render(getX(), getY(), &curClip);
+    mTexture->render(getX() - camRect->x, getY() - camRect->y, &curClip);
 }
 
 void TRObject::linkTexture(TRTexture *texture){

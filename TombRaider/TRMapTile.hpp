@@ -12,6 +12,13 @@
 #include <stdio.h>
 #include "TRObject.hpp"
 
+enum TRMapTileType{
+    TRMapTileTypeGround = 0,
+    TRMapTileTypeWall = 1,
+    TRMapTileTypeDoor = 2,
+    TRMapTileTypeTeleport = 3
+};
+
 class TRMapTile : public TRObject{
 public:
     bool isPassBy();
