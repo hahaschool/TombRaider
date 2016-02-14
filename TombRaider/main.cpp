@@ -7,9 +7,28 @@
 //
 
 #include <iostream>
+#include "TRPathFinder.hpp"
 
 int main(int argc, const char * argv[]) {
-    // insert code here...
-    std::cout << "Hello, World!\n";
+    int n,m,a,b,c,d;
+    std::cin >> n >> m >> a >> b >> c >> d;
+    TRPathFinder pf;
+    pf.init(n, m);
+    pf.setHeuristic(TRPathFinderHeuristicManhatton);
+    pf.setStartingPoint(b, a);
+    pf.setTargetPoint(d, c);
+    for(int i = 0;i < n; i++){
+        for(int j = 0;j < m; j++){
+            char q;
+            scanf(" %c",&q);
+            if(q == '0'){
+                pf.setMatrix(j, i, TRPathFinderMatrixObstacle);
+            }else{
+                pf.setMatrix(j, i, TRPathFinderMatrixRoad);
+            }
+        }
+    }
+    pf.findPath();
+    pf.printOut();
     return 0;
 }
