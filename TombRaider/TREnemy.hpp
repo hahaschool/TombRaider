@@ -13,6 +13,9 @@
 #include "TRObject.hpp"
 
 class TREnemy : public TRObject{
+public:
+    void beAttacked(int dmg);
+private:
     
 };
 
