@@ -51,7 +51,7 @@ enum TRPathFinderMatrix{
 class TRPathFinder{
 public:
     //初始化
-    void init(int h,int w);
+    void init(int h,int w,int initDValue);
     //寻找从str到tar的路径，返回是否找到，路径保存在一个stack里
     bool findPath();
     //设定A*算法使用的启发函数
@@ -59,7 +59,7 @@ public:
     //当前使用的启发函数类型
     TRPathFinderHeuristic getHeuristic();
     //强制重算评估函数
-    void calculateHeuristic();
+    void calculateHeuristic(bool force = false);
     //修改迷宫矩阵
     void setMatrix(int x,int y,TRPathFinderMatrix a);
     //起点终点的setter和getter
@@ -69,6 +69,12 @@ public:
     int getStartingPointY();
     int getTargetPointX();
     int getTargetPointY();
+    
+    //启发函数比重
+    void setDValue(int x,int y,int nd);
+    void setDValueAll(int nd);
+    int getDValue(int x,int y);
+    
     
     //Debug
     void printOut();

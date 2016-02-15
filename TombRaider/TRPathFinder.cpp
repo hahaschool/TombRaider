@@ -8,7 +8,7 @@
 
 #include "TRPathFinder.hpp"
 
-void TRPathFinder::init(int mapHeight,int mapWidth){
+void TRPathFinder::init(int mapHeight,int mapWidth,int initDValue){
     heuX = heuY = -1;
     n = mapHeight , m = mapWidth;
     mat.clear();
@@ -27,7 +27,7 @@ void TRPathFinder::init(int mapHeight,int mapWidth){
     }
     singleRow.clear();
     for(int i = 1; i <= m; i++){
-        singleRow.emplace_back(1);
+        singleRow.emplace_back(initDValue);
     }
     for(int i = 1; i <= n ; i++){
         d.emplace_back(singleRow);
@@ -50,16 +50,35 @@ void TRPathFinder::init(int mapHeight,int mapWidth){
     }
 }
 
+void TRPathFinder::setDValue(int x,int y,int nd){
+    d[y][x] = nd;
+    h[y][x] = d[y][x] * dis_manhatton(x, y, tarX, tarY);
+}
+void TRPathFinder::setDValueAll(int nd){
+    for(int i = 0; i < n; i++){
+        for(int j = 0; j < m; j++){
+            d[i][j] = nd;
+        }
+    }
+    calculateHeuristic(true);
+}
+
+int TRPathFinder::getDValue(int x,int y){
+    return d[y][x];
+}
+
+
 void TRPathFinder::setHeuristic(TRPathFinderHeuristic heu){
     heuristic = heu;
+    heuX = -1,heuY = -1;
 }
 
 TRPathFinderHeuristic TRPathFinder::getHeuristic(){
     return (TRPathFinderHeuristic)heuristic;
 }
 
-void TRPathFinder::calculateHeuristic(){
-    if(tarX == heuX && tarY == heuY){
+void TRPathFinder::calculateHeuristic(bool force){
+    if(!force && tarX == heuX && tarY == heuY){
         return;
     }
     heuX = tarX,heuY = tarY;
@@ -102,6 +121,12 @@ int TRPathFinder::getTargetPointY(){
 
 bool TRPathFinder::findPath(){
     calculateHeuristic();
+    for (int i = 0; i < n; i++) {
+        for(int j = 0; j < m; j++){
+            vis[i][j] = false;
+            g[i][j] = (int)INF;
+        }
+    }
     if(!performAStar()){
         return false;
     }
