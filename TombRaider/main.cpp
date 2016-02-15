@@ -13,7 +13,7 @@ int main(int argc, const char * argv[]) {
     int n,m,a,b,c,d;
     std::cin >> n >> m >> a >> b >> c >> d;
     TRPathFinder pf;
-    pf.init(n, m);
+    pf.init(n, m, 3);
     pf.setHeuristic(TRPathFinderHeuristicManhatton);
     pf.setStartingPoint(b, a);
     pf.setTargetPoint(d, c);
