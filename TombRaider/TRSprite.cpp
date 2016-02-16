@@ -89,6 +89,11 @@ void TRSprite::move(){
     }
 }
 
+void TRSprite::undo(){
+    setX(getX() - mVelX);
+    setY(getY() - mVelY);
+}
+
 void TRSprite::startMoving(){
     if(!flgFreeze && !flgMoving){
         for(int i = 0; i < 4; i++){

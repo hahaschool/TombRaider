@@ -8,6 +8,32 @@
 
 #include "TRGameController.hpp"
 
+/*
+ 全流程：
+ 设定好游戏数据
+ 载入资源
+ 载入连通性地图，设定好pathFinder和Grider
+ 载入详细地图，设定好mapTileList
+ 载入怪物分布，设定好enemyList
+ 设定好Hero
+ 开始主循环
+ 
+ 主循环流程：
+ 响应输入，给Hero单位发信
+ 所有单位move()
+ 碰检，undo()掉不合格move
+ 碰检，检查Hero不良状态
+ 碰检，计算在场子弹造成伤害
+ 清除被子弹杀伤的怪物
+ 碰检，计算近身攻击杀伤
+ 清除被近身攻击杀伤的怪物
+ 碰检，计算Hero被弹情况
+ 做出死亡判定
+ 还剩下的物体全员render()
+ 如果死了就进入GG模式
+ */
+
+
 TRGameController::TRGameController(){
     
 }

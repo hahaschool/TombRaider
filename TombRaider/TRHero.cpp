@@ -282,13 +282,6 @@ void TRHero::endMoving(){
 }
 
 void TRHero::move(){
-    if (isMoving()) {
-        TRSprite::move();
-    }
-}
-
-#pragma mark - 渲染
-void TRHero::render(){
     if(anilock){
         if(anilockrem-- <= 0){
             endAttack();
@@ -321,7 +314,14 @@ void TRHero::render(){
             debuff_Slow_clear();
         }
     }
-    move();
+    if (isMoving()) {
+        TRSprite::move();
+    }
+}
+
+#pragma mark - 渲染
+void TRHero::render(){
+    
     TRSprite::render();
 }
 
