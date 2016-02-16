@@ -83,7 +83,7 @@ void TRHero::beAttacked(int dmg){
 
 #pragma mark - 攻击
 
-void TRHero::performAttack(){
+bool TRHero::performAttack(){
     if(!flgdebuff_freeze && atk_cd_rem <= 0){
         if(isAttackingAnimated()){
             linkAttackingAnimator();
@@ -91,7 +91,9 @@ void TRHero::performAttack(){
         }
         atk_cd_rem = atk_cd;
         attacking = true;
+        return true;
     }
+    return false;
 }
 
 void TRHero::endAttack(){
@@ -341,6 +343,8 @@ void TRHero::linkStandingAnimator(){
         linkStaticAnimator(standingAnimator[TRDirectionLeft], TRDirectionLeft);
         linkStaticAnimator(standingAnimator[TRDirectionRight], TRDirectionRight);
         linkStaticAnimator(standingAnimator[TRDirectionDown], TRDirectionDown);
+    }else{
+        setStaticAnimated(false);
     }
 }
 
@@ -363,6 +367,8 @@ void TRHero::linkWalkingAnimator(){
         linkMovingAnimator(walkingAnimator[TRDirectionLeft], TRDirectionLeft);
         linkMovingAnimator(walkingAnimator[TRDirectionRight], TRDirectionRight);
         linkMovingAnimator(walkingAnimator[TRDirectionDown], TRDirectionDown);
+    }else{
+        setMovingAnimated(false);
     }
 }
 
@@ -385,6 +391,8 @@ void TRHero::linkAttackingAnimator(){
         linkStaticAnimator(attackingAnimator[TRDirectionLeft], TRDirectionLeft);
         linkStaticAnimator(attackingAnimator[TRDirectionRight], TRDirectionRight);
         linkStaticAnimator(attackingAnimator[TRDirectionDown], TRDirectionDown);
+    }else{
+        setStaticAnimated(false);
     }
 }
 
@@ -407,6 +415,8 @@ void TRHero::linkFiringAnimator(){
         linkStaticAnimator(firingAnimator[TRDirectionLeft], TRDirectionLeft);
         linkStaticAnimator(firingAnimator[TRDirectionRight], TRDirectionRight);
         linkStaticAnimator(firingAnimator[TRDirectionDown], TRDirectionDown);
+    }else{
+        setStaticAnimated(false);
     }
 }
 

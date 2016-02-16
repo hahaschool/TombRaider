@@ -75,7 +75,12 @@ public:
     void setDValueAll(int nd);
     int getDValue(int x,int y);
     
-    
+    //提取路径(每一次返回stk头，栈空时返回false)
+    /*
+     使用例：
+     while(extractPath(a,b));
+     */
+    bool extractPath(int &topX,int &topY);
     
     //Debug
     void printOut();

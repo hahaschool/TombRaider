@@ -210,6 +210,16 @@ void TRPathFinder::calculate_heuristic_euler(){
     }
 }
 
+bool TRPathFinder::extractPath(int &topX, int &topY){
+    if(stk.empty()){
+        return false;
+    }
+    topX = stk.top().first;
+    topY = stk.top().second;
+    stk.pop();
+    return true;
+}
+
 void TRPathFinder::printOut(){
     for(int i = 0; i < n; i++){
         for(int j = 0;j < m; j++){
