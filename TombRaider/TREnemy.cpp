@@ -7,3 +7,7 @@
 //
 
 #include "TREnemy.hpp"
+
+void TREnemy::beAttacked(int dmg){
+    
+}

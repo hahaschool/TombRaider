@@ -20,6 +20,7 @@
 		E0969ECB1C6E484800932AA0 /* TREnemy.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E0969EC91C6E484800932AA0 /* TREnemy.cpp */; };
 		E0969ECE1C6E48AD00932AA0 /* TRSprite.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E0969ECC1C6E48AD00932AA0 /* TRSprite.cpp */; };
 		E0969ED11C6E4CD600932AA0 /* TRGameController.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E0969ECF1C6E4CD600932AA0 /* TRGameController.cpp */; };
+		E0B68DD01C71C7A6004DB5E7 /* TRBullet.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E0B68DCE1C71C7A6004DB5E7 /* TRBullet.cpp */; };
 		E0F931F41C7083F4006ED7E3 /* TRPathFinder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E0F931F21C7083F4006ED7E3 /* TRPathFinder.cpp */; };
 		E0F931F71C70BFC6006ED7E3 /* TRGrider.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E0F931F51C70BFC6006ED7E3 /* TRGrider.cpp */; };
 /* End PBXBuildFile section */
@@ -60,6 +61,8 @@
 		E0969ECD1C6E48AD00932AA0 /* TRSprite.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = TRSprite.hpp; sourceTree = "<group>"; };
 		E0969ECF1C6E4CD600932AA0 /* TRGameController.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TRGameController.cpp; sourceTree = "<group>"; };
 		E0969ED01C6E4CD600932AA0 /* TRGameController.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = TRGameController.hpp; sourceTree = "<group>"; };
+		E0B68DCE1C71C7A6004DB5E7 /* TRBullet.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TRBullet.cpp; sourceTree = "<group>"; };
+		E0B68DCF1C71C7A6004DB5E7 /* TRBullet.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = TRBullet.hpp; sourceTree = "<group>"; };
 		E0F931F21C7083F4006ED7E3 /* TRPathFinder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TRPathFinder.cpp; sourceTree = "<group>"; };
 		E0F931F31C7083F4006ED7E3 /* TRPathFinder.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = TRPathFinder.hpp; sourceTree = "<group>"; };
 		E0F931F51C70BFC6006ED7E3 /* TRGrider.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TRGrider.cpp; sourceTree = "<group>"; };
@@ -117,6 +120,8 @@
 				E0969ECD1C6E48AD00932AA0 /* TRSprite.hpp */,
 				E0969EC61C6E42D900932AA0 /* TRMapTile.cpp */,
 				E0969EC71C6E42D900932AA0 /* TRMapTile.hpp */,
+				E0B68DCE1C71C7A6004DB5E7 /* TRBullet.cpp */,
+				E0B68DCF1C71C7A6004DB5E7 /* TRBullet.hpp */,
 				E0969EC31C6E390000932AA0 /* TRHero.cpp */,
 				E0969EC41C6E390000932AA0 /* TRHero.hpp */,
 				E0969EC91C6E484800932AA0 /* TREnemy.cpp */,
@@ -187,6 +192,7 @@
 			files = (
 				E0969ECB1C6E484800932AA0 /* TREnemy.cpp in Sources */,
 				E0969EB61C6D9BB000932AA0 /* TRObject.cpp in Sources */,
+				E0B68DD01C71C7A6004DB5E7 /* TRBullet.cpp in Sources */,
 				E0969EC51C6E390000932AA0 /* TRHero.cpp in Sources */,
 				E0969ECE1C6E48AD00932AA0 /* TRSprite.cpp in Sources */,
 				E0F931F71C70BFC6006ED7E3 /* TRGrider.cpp in Sources */,

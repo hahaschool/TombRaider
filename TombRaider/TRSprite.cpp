@@ -90,7 +90,7 @@ void TRSprite::move(){
 }
 
 void TRSprite::startMoving(){
-    if(!flgFreeze){
+    if(!flgFreeze && !flgMoving){
         for(int i = 0; i < 4; i++){
             if(isMovingAnimated()){
                 mMovingAnimator[i]->reset();
