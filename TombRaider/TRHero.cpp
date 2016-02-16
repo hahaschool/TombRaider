@@ -9,14 +9,7 @@
 #include "TRHero.hpp"
 
 TRHero::TRHero(){
-    hp = mxhp = arm = vel = 0;
-    alive = true;
-    attacking = false;
-    standingAnimated = false;
-    flgdebuff_bleed = false;
-    flgdebuff_slow = false;
-    flgdebuff_nogun = false;
-    flgdebuff_freeze = false;
+    
 }
 
 #pragma mark - 属性
@@ -62,13 +55,17 @@ int TRHero::getDamage(){
 
 #pragma mark - 死亡
 
+void TRHero::setDeathClip(SDL_Rect clipRect,TRDirection dir){
+    deathRect[dir] = clipRect;
+}
+
 void TRHero::goDie(){
     setStaticAnimated(false);
     freeze();
-    setStaticClip(SDL_Rect(), TRDirectionUp);
-    setStaticClip(SDL_Rect(), TRDirectionDown);
-    setStaticClip(SDL_Rect(), TRDirectionLeft);
-    setStaticClip(SDL_Rect(), TRDirectionRight);
+    setStaticClip(deathRect[TRDirectionUp], TRDirectionUp);
+    setStaticClip(deathRect[TRDirectionDown], TRDirectionDown);
+    setStaticClip(deathRect[TRDirectionLeft], TRDirectionLeft);
+    setStaticClip(deathRect[TRDirectionRight], TRDirectionRight);
     alive = false;
 }
 
@@ -87,19 +84,32 @@ void TRHero::beAttacked(int dmg){
 #pragma mark - 攻击
 
 void TRHero::performAttack(){
-    if(isAttackingAnimated()){
-        setStaticAnimated(true);
-        linkStaticAnimator(attackAnimator[TRDirectionUp], TRDirectionUp);
-        linkStaticAnimator(attackAnimator[TRDirectionLeft], TRDirectionLeft);
-        linkStaticAnimator(attackAnimator[TRDirectionRight], TRDirectionRight);
-        linkStaticAnimator(attackAnimator[TRDirectionDown], TRDirectionDown);
-        atkfrmcnt = attackAnimator[0]->getAnimationPeriod();
-        freeze();
+    if(!flgdebuff_freeze && atk_cd_rem <= 0){
+        if(isAttackingAnimated()){
+            linkAttackingAnimator();
+            lock(atk_cd);
+        }
+        atk_cd_rem = atk_cd;
+        attacking = true;
     }
 }
 
-void TRHero::attack(TREnemy &obj){
-    obj.beAttacked(dmg);
+void TRHero::endAttack(){
+    linkStandingAnimator();
+    unlock();
+    attacking = false;
+}
+
+void TRHero::attack(TREnemy *obj){
+    obj->beAttacked(dmg);
+}
+
+void TRHero::setAttackCD(int ncd){
+    atk_cd = ncd;
+}
+
+int TRHero::getAttackCD(){
+    return atk_cd;
 }
 
 #pragma mark - 不良状态
@@ -207,7 +217,12 @@ void TRHero::debuff_clear(){
 
 #pragma mark - 远程攻击
 TRBullet* TRHero::fire(){
+    if(bullet_cd_rem <= 0 && !flgdebuff_nogun){
+        lock(fire_cd);
+    }
     
+    
+    return (TRBullet*)NULL;
 }
 
 void TRHero::setBulletDamage(int ndmg){
@@ -228,6 +243,7 @@ int TRHero::getBulletSpeed(){
 
 #pragma mark - 移动
 void TRHero::startMoveUp(){
+    linkWalkingAnimator();
     startMoving();
     setDirection(TRDirectionUp);
     setVelX(0);
@@ -235,6 +251,7 @@ void TRHero::startMoveUp(){
 }
 
 void TRHero::startMoveLeft(){
+    linkWalkingAnimator();
     startMoving();
     setDirection(TRDirectionLeft);
     setVelX(-vel);
@@ -242,6 +259,7 @@ void TRHero::startMoveLeft(){
 }
 
 void TRHero::startMoveDown(){
+    linkWalkingAnimator();
     startMoving();
     setDirection(TRDirectionDown);
     setVelX(0);
@@ -249,6 +267,7 @@ void TRHero::startMoveDown(){
 }
 
 void TRHero::startMoveRight(){
+    linkWalkingAnimator();
     startMoving();
     setDirection(TRDirectionRight);
     setVelX(vel);
@@ -268,8 +287,12 @@ void TRHero::move(){
 
 #pragma mark - 渲染
 void TRHero::render(){
-    atk_cd--,fire_cd--,bullet_cd--;
-    
+    if(anilock){
+        if(anilockrem-- <= 0){
+            endAttack();
+        }
+    }
+    atk_cd_rem--,bullet_cd_rem--;
     if(is_debuff_Bleed()){
         debuff_bleed_rem--;
         setHP(getHP() - debuff_bleed_dmg);
@@ -296,11 +319,113 @@ void TRHero::render(){
             debuff_Slow_clear();
         }
     }
-    
+    move();
     TRSprite::render();
 }
 
 #pragma mark - 治疗
 void TRHero::heal(int det){
     setHP(std::max(getMaxHP(),getHP()+det));
+}
+
+#pragma mark - 动画
+#pragma mark 站立
+void TRHero::setStandingAnimator(TRAnimator *ani, TRDirection dir){
+    standingAnimator[dir] = ani;
+}
+
+void TRHero::linkStandingAnimator(){
+    if(isStandingAnimated()){
+        setStaticAnimated(true);
+        linkStaticAnimator(standingAnimator[TRDirectionUp], TRDirectionUp);
+        linkStaticAnimator(standingAnimator[TRDirectionLeft], TRDirectionLeft);
+        linkStaticAnimator(standingAnimator[TRDirectionRight], TRDirectionRight);
+        linkStaticAnimator(standingAnimator[TRDirectionDown], TRDirectionDown);
+    }
+}
+
+void TRHero::setStandingAnimated(bool flg){
+    standingAnimated = flg;
+}
+
+bool TRHero::isStandingAnimated(){
+    return standingAnimated;
+}
+#pragma mark 走动
+void TRHero::setWalkingAnimator(TRAnimator *ani, TRDirection dir){
+    walkingAnimator[dir] = ani;
+}
+
+void TRHero::linkWalkingAnimator(){
+    if(isWalkingAnimated()){
+        setMovingAnimated(true);
+        linkMovingAnimator(walkingAnimator[TRDirectionUp], TRDirectionUp);
+        linkMovingAnimator(walkingAnimator[TRDirectionLeft], TRDirectionLeft);
+        linkMovingAnimator(walkingAnimator[TRDirectionRight], TRDirectionRight);
+        linkMovingAnimator(walkingAnimator[TRDirectionDown], TRDirectionDown);
+    }
+}
+
+void TRHero::setWalkingAnimated(bool flg){
+    walkingAnimated = flg;
+}
+
+bool TRHero::isWalkingAnimated(){
+    return walkingAnimated;
+}
+#pragma mark 近身攻击
+void TRHero::setAttackingAnimator(TRAnimator *ani, TRDirection dir){
+    attackingAnimator[dir] = ani;
+}
+
+void TRHero::linkAttackingAnimator(){
+    if(isAttackingAnimated()){
+        setStaticAnimated(true);
+        linkStaticAnimator(attackingAnimator[TRDirectionUp], TRDirectionUp);
+        linkStaticAnimator(attackingAnimator[TRDirectionLeft], TRDirectionLeft);
+        linkStaticAnimator(attackingAnimator[TRDirectionRight], TRDirectionRight);
+        linkStaticAnimator(attackingAnimator[TRDirectionDown], TRDirectionDown);
+    }
+}
+
+void TRHero::setAttackingAnimated(bool flg){
+    attackingAnimated = flg;
+}
+
+bool TRHero::isAttackingAnimated(){
+    return attackingAnimated;
+}
+#pragma mark 远程攻击
+void TRHero::setFiringAnimator(TRAnimator *ani, TRDirection dir){
+    firingAnimator[dir] = ani;
+}
+
+void TRHero::linkFiringAnimator(){
+    if(isFiringAnimated()){
+        setStaticAnimated(true);
+        linkStaticAnimator(firingAnimator[TRDirectionUp], TRDirectionUp);
+        linkStaticAnimator(firingAnimator[TRDirectionLeft], TRDirectionLeft);
+        linkStaticAnimator(firingAnimator[TRDirectionRight], TRDirectionRight);
+        linkStaticAnimator(firingAnimator[TRDirectionDown], TRDirectionDown);
+    }
+}
+
+void TRHero::setFiringAnimated(bool flg){
+    firingAnimated = flg;
+}
+
+bool TRHero::isFiringAnimated(){
+    return firingAnimated;
+}
+
+#pragma mark - Animator Lockdown (PRIVATE)
+void TRHero::lock(int interval){
+    freeze();
+    anilockrem = interval;
+    anilock = true;
+}
+void TRHero::unlock(){
+    defreeze();
+    anilock = false;
+    anilockrem = 0;
 }

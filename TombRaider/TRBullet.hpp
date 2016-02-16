@@ -10,13 +10,9 @@
 #define TRBullet_hpp
 
 #include "TRSprite.hpp"
-#include "TRHero.hpp"
-#include "TREnemy.hpp"
 
 class TRBullet : public TRSprite{
 public:
-    void attackHero(TRHero &hero);
-    void attackEnemy(TRBullet &enemy);
     
 private:
     int dmg;

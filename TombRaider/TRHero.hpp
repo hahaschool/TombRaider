@@ -15,14 +15,14 @@
 #include "TRBullet.hpp"
 /*
  使用说明:
- 1.配置血量，最大血量，正常移动速度，防御力，近身攻击力，子弹攻击力，子弹速度
- 2.配置动画信息（行走动画，站立动画，治疗动画，近身攻击，远程攻击）
+ 1.配置血量，最大血量，正常移动速度，防御力，近身攻击力，子弹攻击力，子弹速度，近身攻击间隔，远程攻击拔枪时间，远程攻击子弹间隔
+ 2.配置贴图和动画信息（静止贴图，死亡贴图，行走动画，站立动画，治疗动画，近身攻击，远程攻击）
  3.通过isAlive()判断是否还活着
- 4.通过canFire()判断是否可以射击，通过fire()进行射击动画，返回TRBullet*
- 5.通过performAttack()进行近身攻击动画，attack()实际攻击对象
- 6.通过heal()进行治疗动画并治疗
- 7.debuff开头的函数用来维护不良状态
- 8.通过四个startMoving()接收开始移动信号，每一帧调用move()进行实际移动
+ 4.通过canFire()判断是否可以射击，通过fire()进行射击动画，并返回TRBullet*以加入GameController的链表里维护
+ 5.通过performAttack()开始近身攻击动画，然后逐个碰撞检测，用attack()实际攻击对象
+ 6.通过heal()进行治疗动画并治疗(动画功能未开发)
+ 7.debuff开头的函数用来维护不良状态(动画/贴图功能未开发)
+ 8.通过四个startMoving()接收开始移动信号，每一帧调用move()进行实际移动，移动结束之后endMoving();
  9.render()是渲染时函数
 */
 class TRHero : public TRSprite{
@@ -81,7 +81,10 @@ public:
     void beAttacked(int dmg);
     //近身攻击
     void performAttack();
-    void attack(TREnemy &obj);
+    void endAttack();
+    void setAttackCD(int ncd);
+    int getAttackCD();
+    void attack(TREnemy *obj);
     //治疗
     void heal(int det);
     
@@ -91,21 +94,39 @@ public:
     void setStandingAnimator(TRAnimator *ani,TRDirection dir);
     void setHealingAnimator(TRAnimator *ani,TRDirection dir);
     void setFiringAnimator(TRAnimator *ani,TRDirection dir);
-    void setStandingAnimated();
+    void linkAttackingAnimator();
+    void linkWalkingAnimator();
+    void linkStandingAnimator();
+    void linkFiringAnimator();
+    void setStandingAnimated(bool flg);
+    void setAttackingAnimated(bool flg);
+    void setWalkingAnimated(bool flg);
+    void setFiringAnimated(bool flg);
     bool isStandingAnimated();
     bool isAttackingAnimated();
     bool isWalkingAnimated();
     bool isFiringAnimated();
     
     
+    //死亡画像
+    void setDeathClip(SDL_Rect clipRect,TRDirection dir);
+    
     //渲染时函数，用来在每一帧确认状态
     void render();
     
 private:
+    //animator lockdown
+    bool anilock;
+    int anilockrem;
+    void lock(int interval);
+    void unlock();
+    
     //cool down
     int atk_cd;
+    int atk_cd_rem;
     int fire_cd;
     int bullet_cd;
+    int bullet_cd_rem;
     
     //property
     int hp,mxhp,arm,dmg;
@@ -117,9 +138,13 @@ private:
     
     //animator
     bool standingAnimated;
-    TRAnimator *attackAnimator[4];
+    bool walkingAnimated;
+    bool attackingAnimated;
+    bool firingAnimated;
+    TRAnimator *attackingAnimator[4];
     TRAnimator *standingAnimator[4];
     TRAnimator *walkingAnimator[4];
+    TRAnimator *firingAnimator[4];
     
     //debuffs
     bool flgdebuff_slow;
@@ -136,6 +161,9 @@ private:
     //gun
     int bullet_dmg;
     int bullet_vel;
+    
+    //death rect
+    SDL_Rect deathRect[4];
     
 };
 
