@@ -25,6 +25,7 @@
  8.通过四个startMoving()接收开始移动信号，每一帧调用move()进行实际移动，移动结束之后endMoving();
  9.render()是渲染时函数
 */
+class TREnemy;
 class TRHero : public TRSprite{
 public:
     //属性
@@ -80,7 +81,7 @@ public:
     //被攻击
     void beAttacked(int dmg);
     //近身攻击
-    void performAttack();
+    bool performAttack();
     void endAttack();
     void setAttackCD(int ncd);
     int getAttackCD();
