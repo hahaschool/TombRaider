@@ -71,6 +71,7 @@ void TRGameController::loadResources(){
         mapTileTextureArray[id] = tex;
         gTextureKeyMap[name] = tex;
     }
+    ifs.close();
     //载入怪物贴图
     ifs.open("Resources/Config/Texture_Enemy.cfg");
     ifs >> n;
@@ -84,6 +85,7 @@ void TRGameController::loadResources(){
         enemyTextureArray[id] = tex;
         gTextureKeyMap[name] = tex;
     }
+    ifs.close();
     //载入英雄贴图
     ifs.open("Resources/Config/Texture_Hero.cfg");
     ifs >> n;
@@ -97,6 +99,7 @@ void TRGameController::loadResources(){
         heroTextureArray[id] = tex;
         gTextureKeyMap[name] = tex;
     }
+    ifs.close();
     //载入子弹贴图
     ifs.open("Resources/Config/Texture_Bullet.cfg");
     ifs >> n;
@@ -110,6 +113,7 @@ void TRGameController::loadResources(){
         bulletTextureArray[id] = tex;
         gTextureKeyMap[name] = tex;
     }
+    ifs.close();
     //载入Animator
     ifs.open("Resources/Config/Animator.cfg");
     ifs >> n;
@@ -129,6 +133,135 @@ void TRGameController::loadResources(){
         gAnimatorKeyMap[name] = ani;
         animatorArray[id] = ani;
     }
+    ifs.close();
+    //载入Enemy
+    ifs.open("Resources/Config/Enemy.cfg");
+    ifs >> n;
+    for(int i = 1; i<= n; i++){
+        int id;
+        std::string name,type,flg;
+        TREnemy *enm = new TREnemy;
+        ifs >> id >> name >> type;
+        defaultEnemyMap[name] = enm;
+        if (type == "random") {
+            enm -> setType(TREnemyRandom);
+        }else if(type == "smart"){
+            enm -> setType(TREnemySmart);
+        }
+        int hp,dmg,arm,vel,cd;
+        ifs >> hp >> dmg >> arm >> vel >> cd;
+        enm -> setHP(hp);
+        enm -> setDamage(dmg);
+        enm -> setSpeed(vel);
+        enm -> setArmour(arm);
+        enm -> setAttackCD(cd);
+        ifs >> name;
+        enm -> linkTexture(gTextureKeyMap[name]);
+        for(int j = 0; j < 4; j++){
+            int x,y,h,w;
+            ifs >> x >> y >> h >> w;
+            enm -> setStaticClip({x,y,h,w}, (TRDirection)j);
+        }
+        for(int j = 0; j < 4; j++){
+            int x,y,h,w;
+            ifs >> x >> y >> h >> w;
+            enm -> setDeathClip({x,y,h,w}, (TRDirection)j);
+        }
+        ifs >> flg;
+        if(flg == "yes"){
+            enm -> setWalkingAnimated(true);
+            for(int j = 0; j < 4; j++){
+                ifs >> name;
+                enm -> setWalkingAnimator(gAnimatorKeyMap[name], (TRDirection)j);
+            }
+        }else{
+            enm -> setWalkingAnimated(false);
+        }
+        ifs >> flg;
+        if(flg == "yes"){
+            enm -> setAttackingAnimated(true);
+            for(int j = 0; j < 4; j++){
+                ifs >> name;
+                enm -> setAttackingAnimator(gAnimatorKeyMap[name], (TRDirection)j);
+            }
+        }else{
+            enm -> setAttackingAnimated(false);
+        }
+    }
+    ifs.close();
+    //载入Hero
+    ifs.open("Resources/Config/Hero.cfg");
+    ifs >> n;
+    for (int i = 1; i <= n; i++) {
+        int id;
+        std::string name;
+        TRHero *ho = new TRHero;
+        ifs >> id >> name;
+        defaultHeroMap[name] = ho;
+        int hp,arm,dmg,vel,cd,bdmg,bvl;
+        ifs >> hp >> arm >> dmg >> vel >> cd >> bdmg >> bvl;
+        ho -> setHP(hp);
+        ho -> setVelocity(vel);
+        ho -> setDamage(dmg);
+        ho -> setAttackCD(cd);
+        ho -> setArmour(arm);
+        ho -> setBulletDamage(bdmg);
+        ho -> setBulletSpeed(bvl);
+        ifs >> name;
+        ho -> linkTexture(gTextureKeyMap[name]);
+        for(int j = 0; j < 4; j++){
+            int x,y,h,w;
+            ifs >> x >> y >> h >> w;
+            ho -> setStaticClip({x,y,h,w}, (TRDirection)j);
+        }
+        for(int j = 0; j < 4; j++){
+            int x,y,h,w;
+            ifs >> x >> y >> h >> w;
+            ho -> setDeathClip({x,y,h,w}, (TRDirection)j);
+        }
+        std::string flg;
+        ifs >> flg;
+        if(flg == "yes"){
+            ho -> setWalkingAnimated(true);
+            for(int j = 0; j < 4; j++){
+                ifs >> name;
+                ho -> setWalkingAnimator(gAnimatorKeyMap[name], (TRDirection)j);
+            }
+        }else{
+            ho -> setWalkingAnimated(false);
+        }
+        ifs >> flg;
+        if(flg == "yes"){
+            ho -> setAttackingAnimated(true);
+            for(int j = 0; j < 4; j++){
+                ifs >> name;
+                ho -> setAttackingAnimator(gAnimatorKeyMap[name], (TRDirection)j);
+            }
+        }else{
+            ho -> setAttackingAnimated(false);
+        }
+        ifs >> flg;
+        if(flg == "yes"){
+            ho -> setFiringAnimated(true);
+            for(int j = 0; j < 4; j++){
+                ifs >> name;
+                ho -> setFiringAnimator(gAnimatorKeyMap[name], (TRDirection)j);
+            }
+        }else{
+            ho -> setFiringAnimated(false);
+        }
+        ifs >> flg;
+        if(flg == "yes"){
+            ho -> setStandingAnimated(true);
+            for(int j = 0; j < 4; j++){
+                ifs >> name;
+                ho -> setStandingAnimator(gAnimatorKeyMap[name], (TRDirection)j);
+            }
+        }else{
+            ho -> setStandingAnimated(false);
+        }
+    }
+    ifs.close();
     
 }
 
