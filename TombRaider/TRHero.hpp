@@ -26,6 +26,7 @@
  9.render()是渲染时函数
 */
 class TREnemy;
+class TRBullet;
 class TRHero : public TRSprite{
 public:
     //属性

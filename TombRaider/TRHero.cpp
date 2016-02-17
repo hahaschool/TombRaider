@@ -220,10 +220,15 @@ void TRHero::debuff_clear(){
 #pragma mark - 远程攻击
 TRBullet* TRHero::fire(){
     if(bullet_cd_rem <= 0 && !flgdebuff_nogun){
+        TRBullet *bul = new TRBullet;
+        bul -> setDamage(bullet_dmg);
+        bul -> setDirection((TRDirection)getDirection());
+        bul -> setSpeed(bullet_vel);
+        bul -> setType(TRBulletFriendly);
+        bul -> startMoving();
         lock(fire_cd);
+        return bul;
     }
-    
-    
     return (TRBullet*)NULL;
 }
 
@@ -282,13 +287,6 @@ void TRHero::endMoving(){
 }
 
 void TRHero::move(){
-    if (isMoving()) {
-        TRSprite::move();
-    }
-}
-
-#pragma mark - 渲染
-void TRHero::render(){
     if(anilock){
         if(anilockrem-- <= 0){
             endAttack();
@@ -321,7 +319,14 @@ void TRHero::render(){
             debuff_Slow_clear();
         }
     }
-    move();
+    if (isMoving()) {
+        TRSprite::move();
+    }
+}
+
+#pragma mark - 渲染
+void TRHero::render(){
+    
     TRSprite::render();
 }
 

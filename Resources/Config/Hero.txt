@@ -1,0 +1,32 @@
+//SUMNUM
+//ID name 
+//maxhp arm dmg vel atk_cd
+//bullet_dmg bullet_vel
+//texture_name
+//static_clips
+//death_clips
+//walking_animated
+//animators
+//attacking_animated
+//animators
+//firing_animated
+//animators
+//standing_animated
+//animators
+1
+01 hahaschool
+10000 10000 10000 10 30
+5000 30
+hero/hahaschool
+0 0 50 50
+0 50 50 50
+0 100 50 50
+0 150 50 50
+0 0 50 50
+0 50 50 50
+0 100 50 50
+0 150 50 50
+no
+no
+no
+no

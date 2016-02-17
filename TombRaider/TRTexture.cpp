@@ -22,7 +22,7 @@ TRTexture::~TRTexture(){
     free();
 }
 
-bool TRTexture::loadFromFile(std::string path,Uint8 keyRed = 0,Uint8 keyGreen = 0xFF,Uint8 keyBlue = 0XFF){
+bool TRTexture::loadFromFile(std::string path,Uint8 keyRed,Uint8 keyGreen,Uint8 keyBlue){
     //Clear loaded texture
     free();
     //Load texture via surface

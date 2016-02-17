@@ -49,6 +49,7 @@ public:
     
     //移动位置
     void move();
+    void undo();
     
     //移动中标志
     void startMoving();

@@ -166,15 +166,6 @@ void TREnemy::attack(TRHero *obj, int dmg){
 
 #pragma mark - 渲染
 void TREnemy::render(){
-    if(anilock){
-        anilockrem--;
-        if(anilockrem <= 0){
-            unlock();
-            endAttacking();
-        }
-    }
-    atk_cd_rem--;
-    move();
     TRSprite::render();
 }
 
@@ -220,6 +211,14 @@ void TREnemy::planRoute(bool force){
 #pragma mark - 移动
 
 void TREnemy::move(){
+    if(anilock){
+        anilockrem--;
+        if(anilockrem <= 0){
+            unlock();
+            endAttacking();
+        }
+    }
+    atk_cd_rem--;
     if (isMoving()) {
         if(type == TREnemyRandom){
             moveRandom();
