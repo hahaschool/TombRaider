@@ -48,8 +48,87 @@ void TRGameController::free(){
 }
 
 void TRGameController::loadResources(){
-    //载入地图元素
-    
+    //init
+    gTextureKeyMap.clear();
+    gAnimatorKeyMap.clear();
+    mapTileTextureArray.clear();
+    enemyTextureArray.clear();
+    bulletTextureArray.clear();
+    heroTextureArray.clear();
+    defaultEnemyMap.clear();
+    defaultHeroMap.clear();
+    //载入地图贴图
+    std::ifstream ifs("Resources/Config/Texture_Maptile.cfg");
+    int n;
+    ifs >> n;
+    mapTileTextureArray.resize(n+1);
+    for(int i = 1; i <= n; i++){
+        int id;
+        std::string name,path;
+        TRTexture *tex = new TRTexture;
+        ifs >> id >> name >> path;
+        tex -> loadFromFile(path);
+        mapTileTextureArray[id] = tex;
+        gTextureKeyMap[name] = tex;
+    }
+    //载入怪物贴图
+    ifs.open("Resources/Config/Texture_Enemy.cfg");
+    ifs >> n;
+    enemyTextureArray.resize(n+1);
+    for(int i = 1; i <= n; i++){
+        int id;
+        std::string name,path;
+        TRTexture *tex = new TRTexture;
+        ifs >> id >> name >> path;
+        tex -> loadFromFile(path);
+        enemyTextureArray[id] = tex;
+        gTextureKeyMap[name] = tex;
+    }
+    //载入英雄贴图
+    ifs.open("Resources/Config/Texture_Hero.cfg");
+    ifs >> n;
+    heroTextureArray.resize(n+1);
+    for(int i = 1; i <= n; i++){
+        int id;
+        std::string name,path;
+        TRTexture *tex = new TRTexture;
+        ifs >> id >> name >> path;
+        tex -> loadFromFile(path);
+        heroTextureArray[id] = tex;
+        gTextureKeyMap[name] = tex;
+    }
+    //载入子弹贴图
+    ifs.open("Resources/Config/Texture_Bullet.cfg");
+    ifs >> n;
+    bulletTextureArray.resize(n+1);
+    for(int i = 1; i <= n; i++){
+        int id;
+        std::string name,path;
+        TRTexture *tex = new TRTexture;
+        ifs >> id >> name >> path;
+        tex -> loadFromFile(path);
+        bulletTextureArray[id] = tex;
+        gTextureKeyMap[name] = tex;
+    }
+    //载入Animator
+    ifs.open("Resources/Config/Animator.cfg");
+    ifs >> n;
+    animatorArray.resize(n+1);
+    for(int i = 1; i <= n; i++){
+        int id,fcnt,fpc;
+        std::string name;
+        ifs >> id >> name >> fpc >> fcnt;
+        TRAnimator *ani = new TRAnimator;
+        ani -> setLoop(true);
+        for(int j = 1; j <= fcnt;j++){
+            int x,y,h,w;
+            ifs >> x >> y >> h >> w;
+            ani -> appendClipRect({x,y,h,w});
+        }
+        ani -> setRateByFramePerClip(fpc);
+        gAnimatorKeyMap[name] = ani;
+        animatorArray[id] = ani;
+    }
     
 }
 
@@ -82,9 +161,6 @@ void TRGameController::createMapTile(std::string textureKey,TRMapTileType type,i
     
 }
 
-void TRGameController::createEnemy(){
-    
-}
 
 void TRGameController::startGame(){
     

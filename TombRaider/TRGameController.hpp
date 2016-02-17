@@ -36,6 +36,9 @@ public:
     //载入地图
     void loadMapFromFile(std::string path);
     
+    //清除关卡
+    void clearStage();
+    
     //处理键盘事件
     void handleEvent(SDL_Event &e);
     
@@ -49,7 +52,10 @@ public:
     void createMapTile(std::string textureKey,TRMapTileType type,int x,int y);
     
     //创建敌人
-    void createEnemy();
+    void createEnemy(std::string defaultKey,int x,int y);
+    
+    //创建英雄
+    void createHero(std::string defaultKey,int x,int y);
     
     //游戏开始
     void startGame();
@@ -60,10 +66,11 @@ public:
     void resumeGame();
     bool isGamePausing();
     
+    //游戏结束
+    void gameOver();
+    
     //基本碰撞检测
     bool checkCollision(SDL_Rect a,SDL_Rect b);
-    
-    //路径设定
     
     
 private:
@@ -75,10 +82,20 @@ private:
     std::string pathDistribution;
     
     //材质资源表
+    std::vector<TRTexture *> mapTileTextureArray;
+    std::vector<TRTexture *> enemyTextureArray;
+    std::vector<TRTexture *> bulletTextureArray;
+    std::vector<TRTexture *> heroTextureArray;
     std::map<std::string,TRTexture*> gTextureKeyMap;
     
     //TRAnimator表
+    std::vector<TRAnimator*> animatorArray;
     std::map<std::string,TRAnimator*> gAnimatorKeyMap;
+    
+    //TREnemy Hero预置
+    std::map<std::string,TREnemy *> defaultEnemyMap;
+    std::map<std::string,TRHero *> defaultHeroMap;
+    
     
     //全局渲染器
     SDL_Renderer *gRenderer;

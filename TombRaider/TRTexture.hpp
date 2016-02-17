@@ -22,7 +22,7 @@ public:
     //Destructor
     ~TRTexture();
     //Load Resource Image
-    bool loadFromFile(std::string path,Uint8 keyRed,Uint8 keyGreen,Uint8 keyBlue);
+    bool loadFromFile(std::string path,Uint8 keyRed = 0,Uint8 keyGreen = 0xFF,Uint8 keyBlue = 0XFF);
 #ifdef _SDL_TTF_H
     //Load from TTF fonts
     bool loadFromRenderedText(std::string textureText,SDL_Color textColor);
