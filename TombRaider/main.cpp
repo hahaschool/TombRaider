@@ -43,7 +43,7 @@ bool init(){
             printf("Warning: Linear texture filtering not enabled!");
         }
         //创建窗口
-        gWindow = SDL_CreateWindow("SDL Tutorial", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+        gWindow = SDL_CreateWindow("Tomb Raider", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
         if(gWindow == NULL){
             printf("Error:Window creation failed. SDL_Error: %s\n",SDL_GetError());
             success = false;
@@ -102,6 +102,6 @@ int main(int argc, const char * argv[]) {
             
         }
     }
-    colse();
+    close();
     return 0;
 }

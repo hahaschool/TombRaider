@@ -14,6 +14,8 @@
 #include <list>
 #include <vector>
 #include <map>
+#include <iostream>
+#include <fstream>
 #include "TRSprite.hpp"
 #include "TRTimer.hpp"
 #include "TRMapTile.hpp"
@@ -73,10 +75,10 @@ private:
     std::string pathDistribution;
     
     //材质资源表
-    std::map<std::string,TRTexture*> gTextureMap;
+    std::map<std::string,TRTexture*> gTextureKeyMap;
     
     //TRAnimator表
-    std::map<std::string,TRAnimator*> gAnimatorMap;
+    std::map<std::string,TRAnimator*> gAnimatorKeyMap;
     
     //全局渲染器
     SDL_Renderer *gRenderer;

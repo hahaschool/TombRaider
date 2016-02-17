@@ -34,6 +34,7 @@
  */
 
 
+
 TRGameController::TRGameController(){
     
 }
@@ -47,6 +48,8 @@ void TRGameController::free(){
 }
 
 void TRGameController::loadResources(){
+    //载入地图元素
+    
     
 }
 
