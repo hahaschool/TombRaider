@@ -8,6 +8,13 @@
 
 #include "TREnemy.hpp"
 
+TREnemy::TREnemy(){
+    anilock = false;
+    anilockrem = 0;
+    alive = true;
+    chasing = false;
+}
+
 #pragma mark - 贴图和动画配置
 bool TREnemy::isWalkingAnimated(){
     return walkingAnimated;
@@ -285,21 +292,26 @@ void TREnemy::moveAlongPath(){
 }
 
 void TREnemy::moveRandom(){
-    int curdir = rand()%4;
-    setDirection(curdir);
-    if(curdir == TRDirectionUp){
-        setVelY(-vel);
-        setVelX(0);
-    }else if(curdir == TRDirectionLeft){
-        setVelX(-vel);
-        setVelY(0);
-    }else if(curdir == TRDirectionRight){
-        setVelX(vel);
-        setVelY(0);
-    }else{
-        setVelX(0);
-        setVelY(vel);
+    if(randrem >= 30){
+        int curdir = rand()%4;
+        setDirection(curdir);
+        if(curdir == TRDirectionUp){
+            setVelY(-vel);
+            setVelX(0);
+        }else if(curdir == TRDirectionLeft){
+            setVelX(-vel);
+            setVelY(0);
+        }else if(curdir == TRDirectionRight){
+            setVelX(vel);
+            setVelY(0);
+        }else{
+            setVelX(0);
+            setVelY(vel);
+        }
+        randrem = 0;
+        return;
     }
+    randrem++;
     TRSprite::move();
 }
 

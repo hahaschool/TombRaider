@@ -21,6 +21,7 @@ enum TRMapTileType{
 
 class TRMapTile : public TRObject{
 public:
+    TRMapTile();
     bool isPassBy();
     void setPassBy(bool flg);
 private:

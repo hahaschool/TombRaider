@@ -7,6 +7,13 @@
 //
 
 #include "TRSprite.hpp"
+TRSprite::TRSprite(){
+    flgMovingAnimated = false;
+    flgStaticAnimated = false;
+    flgFreeze = false;
+    flgMoving = false;
+    mDirection = TRDirectionUp;
+}
 
 void TRSprite::setVelX(int velX){
     mVelX = velX;

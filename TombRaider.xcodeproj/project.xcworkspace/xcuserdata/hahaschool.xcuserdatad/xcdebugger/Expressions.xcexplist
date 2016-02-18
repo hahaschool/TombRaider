@@ -3,6 +3,53 @@
    version = "1.0">
    <ContextStates>
       <ContextState
+         contextName = "GLOBAL">
+         <PersistentStrings>
+            <PersistentString
+               value = "gAnimatorKeyMap">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "TRGameController::handleEvent(SDL_Event&amp;):TRGameController.cpp">
+         <PersistentStrings>
+            <PersistentString
+               value = "hero">
+            </PersistentString>
+            <PersistentString
+               value = "animatorArray">
+            </PersistentString>
+            <PersistentString
+               value = "defaultHeroMap">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "TRAnimator::getCurrentClipRect():TRAnimator.cpp">
+      </ContextState>
+      <ContextState
+         contextName = "TRSprite::render():TRSprite.cpp">
+      </ContextState>
+      <ContextState
+         contextName = "TRAnimator::animate():TRAnimator.cpp">
+      </ContextState>
+      <ContextState
+         contextName = "TRGameController::runFrame():TRGameController.cpp">
+         <PersistentStrings>
+            <PersistentString
+               value = "gMapTileList">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "TRGameController::loadResources():TRGameController.cpp">
+         <PersistentStrings>
+            <PersistentString
+               value = "n">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
          contextName = "TRGameController::createEnemy(std::__1::basic_string&lt;char, std::__1::char_traits&lt;char&gt;, std::__1::allocator&lt;char&gt; &gt;, int, int, int, int):TRGameController.cpp">
          <PersistentStrings>
             <PersistentString

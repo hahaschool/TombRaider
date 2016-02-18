@@ -88,7 +88,7 @@ private:
     bool flgAttackPerformed;
     bool flgFired;
     TRBullet *lastFire;
-    
+    int keyCnt;
     
     bool flgGameStarted;
     bool flgGamePaused;

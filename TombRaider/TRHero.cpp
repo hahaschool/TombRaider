@@ -9,7 +9,19 @@
 #include "TRHero.hpp"
 
 TRHero::TRHero(){
-    
+    const int INF = 0x3f3f3f3f;
+    anilock = false;
+    anilockrem = 0;
+    alive = true;
+    attacking = false;
+    standingAnimated = false;
+    walkingAnimated = false;
+    attackingAnimated = false;
+    firingAnimated = false;
+    flgdebuff_slow = false;
+    flgdebuff_bleed = false;
+    flgdebuff_freeze = false;
+    flgdebuff_nogun = false;
 }
 
 #pragma mark - 属性
@@ -250,32 +262,40 @@ int TRHero::getBulletSpeed(){
 
 #pragma mark - 移动
 void TRHero::startMoveUp(){
-    linkWalkingAnimator();
-    startMoving();
+    if (!isMoving()) {
+        linkWalkingAnimator();
+        startMoving();
+    }
     setDirection(TRDirectionUp);
     setVelX(0);
     setVelY(-vel);
 }
 
 void TRHero::startMoveLeft(){
-    linkWalkingAnimator();
-    startMoving();
+    if (!isMoving()) {
+        linkWalkingAnimator();
+        startMoving();
+    }
     setDirection(TRDirectionLeft);
     setVelX(-vel);
     setVelY(0);
 }
 
 void TRHero::startMoveDown(){
-    linkWalkingAnimator();
-    startMoving();
+    if (!isMoving()) {
+        linkWalkingAnimator();
+        startMoving();
+    }
     setDirection(TRDirectionDown);
     setVelX(0);
     setVelY(vel);
 }
 
 void TRHero::startMoveRight(){
-    linkWalkingAnimator();
-    startMoving();
+    if (!isMoving()) {
+        linkWalkingAnimator();
+        startMoving();
+    }
     setDirection(TRDirectionRight);
     setVelX(vel);
     setVelY(0);

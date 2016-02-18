@@ -34,6 +34,7 @@ class TRHero;
 
 class TREnemy : public TRSprite{
 public:
+    TREnemy();
     //贴图和动画配置
     bool isWalkingAnimated();
     void setWalkingAnimated(bool flg);
@@ -91,6 +92,8 @@ public:
     
     
 private:
+    int randrem;
+    
     TREnemyType type;
     
     //animator lock

@@ -21,6 +21,9 @@ enum TRDirection{
 
 class TRSprite : public TRObject{
 public:
+    //Constructor
+    TRSprite();
+    
     //移动速度的Setter和Getter
     void setVelX(int velX);
     void setVelY(int velY);

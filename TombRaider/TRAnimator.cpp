@@ -94,7 +94,7 @@ void TRAnimator::animate(){
         frameCnt = 0;
         curidx++;
     }
-    if(curidx > seq.size()){
+    if(curidx >= seq.size()){
         curidx = 0;
     }
 }
