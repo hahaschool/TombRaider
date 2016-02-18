@@ -30,6 +30,8 @@ public:
     void setHeight(int h);
     void setBoxRect(SDL_Rect newBox);
     void setPos(int x,int y);
+    void linkLevelRect(SDL_Rect* lvlrect);
+    void linkCameraRect(SDL_Rect* camrect);
     
     //设定即将渲染的贴图资源位置
     void setCurClip(SDL_Rect clipRect);

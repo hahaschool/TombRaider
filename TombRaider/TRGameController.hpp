@@ -49,13 +49,13 @@ public:
     void linkRenderer(SDL_Renderer *renderer);
     
     //创建地图块
-    void createMapTile(std::string textureKey,TRMapTileType type,int x,int y);
+    void createMapTile(std::string textureKey,TRMapTileType type,int x,int y,int h,int w);
     
     //创建敌人
-    void createEnemy(std::string defaultKey,int x,int y);
+    void createEnemy(std::string defaultKey,int x,int y,int h,int w);
     
     //创建英雄
-    void createHero(std::string defaultKey,int x,int y);
+    void createHero(std::string defaultKey,int x,int y,int h,int w);
     
     //游戏开始
     void startGame();
@@ -69,17 +69,37 @@ public:
     //游戏结束
     void gameOver();
     
+    //每帧的运算
+    void runFrame();
+    void render();
+    
+    //设定屏幕参数
+    void setCamera(int h,int w);
+    
+    //Grider and PathFinder
+    void linkGrider(TRGrider *grid);
+    void linkPathfinder(TRPathFinder *pf);
+    
     //基本碰撞检测
     bool checkCollision(SDL_Rect a,SDL_Rect b);
     
     
 private:
+    bool flgAttackPerformed;
+    bool flgFired;
+    TRBullet *lastFire;
+    
+    
     bool flgGameStarted;
     bool flgGamePaused;
     
     //地图文件和物体分布文件路径
     std::string pathMapFramework;
     std::string pathDistribution;
+    
+    //地图路径表
+    std::vector<std::string> mapPathArray;
+    std::map<std::string,std::string> mapPathMap;
     
     //材质资源表
     std::vector<TRTexture *> mapTileTextureArray;
@@ -96,6 +116,9 @@ private:
     std::map<std::string,TREnemy *> defaultEnemyMap;
     std::map<std::string,TRHero *> defaultHeroMap;
     
+    //全局Grider和寻路器
+    TRGrider *gGrider;
+    TRPathFinder *gPathFinder;
     
     //全局渲染器
     SDL_Renderer *gRenderer;
@@ -105,6 +128,9 @@ private:
     
     //怪物列表
     std::list<TREnemy*> gEnemyList;
+    
+    //子弹列表
+    std::list<TRBullet*> gBulletList;
     
     //英雄单位
     TRHero *hero;
