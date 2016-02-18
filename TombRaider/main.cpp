@@ -65,6 +65,18 @@ bool init(){
             }
         }
     }
+
+    gGameController -> linkRenderer(gRenderer);
+    gGameController -> setCamera(SCREEN_HEIGHT, SCREEN_WIDTH);
+    gGameController -> linkGrider(gGrider);
+    gGameController -> linkPathfinder(gPathFinder);
+    gGameController -> loadResources();
+    
+    gGrider -> tileHeight = 50;
+    gGrider -> tileWidth = 50;
+    
+    gPathFinder -> setHeuristic(TRPathFinderHeuristicEuler);
+    
     return success;
 }
 
@@ -87,12 +99,17 @@ int main(int argc, const char * argv[]) {
         bool quit = false;
         SDL_Event e;
         
+        //dubug
+        gGameController -> createEnemy("bat", 0, 0, 50, 50);
+        
         while(!quit){
             while (SDL_PollEvent(&e) != 0) {
                 if(e.type == SDL_QUIT){
                     quit = true;
                 }
                 //handleEvent
+                gGameController -> handleEvent(e);
+                gGameController -> runFrame();
                 
                 
                 

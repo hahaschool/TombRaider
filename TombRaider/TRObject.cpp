@@ -55,6 +55,13 @@ void TRObject::setCurClip(SDL_Rect clipRect){
     curClip = clipRect;
 }
 
+void TRObject::linkLevelRect(SDL_Rect* lvlrect){
+    levelRect = lvlrect;
+}
+void TRObject::linkCameraRect(SDL_Rect* camrect){
+    camRect = camrect;
+}
+
 void TRObject::render(){
     mTexture->render(getX() - camRect->x, getY() - camRect->y, &curClip);
 }
