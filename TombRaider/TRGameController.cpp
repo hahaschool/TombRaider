@@ -33,6 +33,34 @@
  如果死了就进入GG模式
  */
 
+
+void TRGameController::loadMapFromFile(std::string path){
+    std::ifstream ifs;
+    ifs.open(path);
+    int n,m;
+    ifs >> n >> m;
+    gLevelBox.h = n*50;
+    gLevelBox.w = m*50;
+    gGrider->levelHeight = gLevelBox.h;
+    gGrider->levelWidth = gLevelBox.w;
+    gGrider->gridHeight = n;
+    gGrider->gridWidth = m;
+    gPathFinder->init(n, m, 4);
+    for(int i = 0; i < n; i++){
+        for(int j = 0; j < m; j++){
+            char a;
+            ifs >> a;
+            if (a == '0') {
+                gPathFinder->setMatrix(j, i, TRPathFinderMatrixObstacle);
+                createMapTile("floor/grass", TRMapTileTypeGround, j*50, i*50, 50, 50);
+            }else{
+                gPathFinder->setMatrix(j, i, TRPathFinderMatrixRoad);
+            }
+        }
+    }
+}
+
+
 void TRGameController::gameOver(){
     flgGameStarted = false;
     flgGamePaused = false;
@@ -48,28 +76,24 @@ void TRGameController::handleEvent(SDL_Event &e){
                     if(e.key.repeat == 0){
                         keyCnt++;
                     }
-                    printf("keyup UP\n");
                     hero -> startMoveUp();
                     break;
                 case SDLK_DOWN:
                     if(e.key.repeat == 0){
                         keyCnt++;
                     }
-                    printf("keyup DOWN\n");
                     hero -> startMoveDown();
                     break;
                 case SDLK_LEFT:
                     if(e.key.repeat == 0){
                         keyCnt++;
                     }
-                    printf("keyup LEFT\n");
                     hero -> startMoveLeft();
                     break;
                 case SDLK_RIGHT:
                     if(e.key.repeat == 0){
                         keyCnt++;
                     }
-                    printf("keyup RIGHT\n");
                     hero -> startMoveRight();
                     break;
                 case SDLK_z:
@@ -138,6 +162,15 @@ void TRGameController::runFrame(){
             }
         }
         flgAttackPerformed = false;
+    }
+    
+    //Calculate Being Attacks
+    for(std::list<TREnemy*>::iterator it = gEnemyList.begin(); it != gEnemyList.end(); it++){
+        if (checkCollision(hero->getBoxRect(), (*it)->getBoxRect())) {
+            if(!(*it)->startAttacking()){
+                (*it)->attack(hero, (*it)->getDamage());
+            }
+        }
     }
     
     //Delete dead Enemys

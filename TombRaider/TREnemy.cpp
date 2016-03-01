@@ -203,6 +203,7 @@ void TREnemy::planRoute(bool force){
     grider->convertLevelTopLeftToGrid(getX(), getY(), gridX, gridY);
     grider->convertLevelTopLeftToGrid(hero->getX(), hero->getY(), hero_gridX, hero_gridY);
     if(force || hero_gridX != prv_hero_x || hero_gridY != prv_hero_y){
+        prv_hero_x = hero_gridX,prv_hero_y = hero_gridY;
         pathFinder->setStartingPoint(gridX, gridY);
         pathFinder->setTargetPoint(hero_gridX, hero_gridY);
         pathFinder->findPath();
@@ -211,6 +212,9 @@ void TREnemy::planRoute(bool force){
         while(pathFinder->extractPath(tx, ty)){
             grider->convertGridToLevelTopLeft(tx, ty, ax, ay);
             path.push(std::make_pair(ax,ay));
+        }
+        if (path.size()) {
+            path.pop();
         }
     }
 }
@@ -230,12 +234,16 @@ void TREnemy::move(){
         if(type == TREnemyRandom){
             moveRandom();
         }else if(type == TREnemySmart){
+            if(std::abs(hero->getX()-getX()) + std::abs(hero->getY()-getY()) > rand()%1000){
+                moveRandom();
+            }
             moveAlongPath();
         }
     }
 }
 
 void TREnemy::moveAlongPath(){
+    planRoute(false);
     if(path.empty()){
         return;
     }
@@ -243,7 +251,7 @@ void TREnemy::moveAlongPath(){
     int topY = path.front().second;
     int curX = getX();
     int curY = getY();
-    if(curX != topX){
+    if(!undoed && curX != topX){
         if(std::abs(curX - topX) < vel){
             if(curX > topX){
                 setDirection(TRDirectionLeft);
@@ -264,9 +272,11 @@ void TREnemy::moveAlongPath(){
         if(curX == topX && curY == topY){
             path.pop();
         }
+        setX(curX);
         return;
     }
     if(curY != topY){
+        undoed = false;
         if(std::abs(curY - topY) < vel){
             if(curY > topY){
                 setDirection(TRDirectionUp);
@@ -287,8 +297,13 @@ void TREnemy::moveAlongPath(){
         if(curX == topX && curY == topY){
             path.pop();
         }
+        setY(curY);
         return;
     }
+    if(curX == topX && curY == topY){
+        path.pop();
+    }
+    return;
 }
 
 void TREnemy::moveRandom(){

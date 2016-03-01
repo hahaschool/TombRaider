@@ -8,6 +8,7 @@
 
 #include "TRSprite.hpp"
 TRSprite::TRSprite(){
+    mVelX = mVelY = 0;
     flgMovingAnimated = false;
     flgStaticAnimated = false;
     flgFreeze = false;
@@ -97,6 +98,7 @@ void TRSprite::move(){
 }
 
 void TRSprite::undo(){
+    undoed = true;
     setX(getX() - mVelX);
     setY(getY() - mVelY);
 }

@@ -95,6 +95,7 @@ void close(){
 }
 
 int main(int argc, const char * argv[]) {
+    srand(time(NULL));
     if (!init()) {
         printf("Error:Failed to load.\n");
     }else{
@@ -102,18 +103,15 @@ int main(int argc, const char * argv[]) {
         SDL_Event e;
         
         //dubug
-        for(int i = 1; i <= 10; i++){
+        gGameController->loadMapFromFile("Resources/Mapdata/test.map");
+        gGameController -> createHero("hahaschool", 50, 50, 48, 32);
+        for(int i = 1; i <= 2; i++){
             for(int j = 1; j<= 10; j++){
-                gGameController -> createMapTile("floor/grass", TRMapTileTypeGround, rand()*50%1920+50, rand()*50%1080+50, 50, 50);
-            }
-        }
-        for(int i = 1; i <= 5; i++){
-            for(int j = 1; j<= 5; j++){
-                gGameController -> createEnemy("bat", i*200, j*200, 100, 100);
+                gGameController -> createEnemy("bat", 10*i+50, 10*j+50, 50, 50);
             }
         }
         
-        gGameController -> createHero("hahaschool", 0, 0, 48, 32);
+        
         gGameController -> startGame();
         
         //The frames per second timer

@@ -64,7 +64,10 @@ public:
     
     //渲染
     void render();
+protected:
+    bool undoed;
 private:
+    
     //碰撞检测时使用的判定点Rect
     SDL_Rect mCollisionBox;
     //X/Y轴向移动速度,每帧
