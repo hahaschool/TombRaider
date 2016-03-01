@@ -33,45 +33,93 @@
  如果死了就进入GG模式
  */
 
-void TRGameController::handleEvent(SDL_Event &e){
-    if (e.type == SDL_KEYDOWN && e.key.repeat == 0) {
-        switch (e.key.keysym.sym) {
-            case SDLK_UP:
-                hero -> startMoveUp();
-                break;
-            case SDLK_DOWN:
-                hero -> startMoveDown();
-                break;
-            case SDLK_LEFT:
-                hero -> startMoveLeft();
-                break;
-            case SDLK_RIGHT:
-                hero -> startMoveRight();
-                break;
-            case SDLK_z:
-                flgAttackPerformed = hero -> performAttack();
-            case SDLK_x:
-                lastFire = hero -> fire();
-                flgFired = lastFire != NULL;
-            default:
-                break;
+
+void TRGameController::loadMapFromFile(std::string path){
+    std::ifstream ifs;
+    ifs.open(path);
+    int n,m;
+    ifs >> n >> m;
+    gLevelBox.h = n*50;
+    gLevelBox.w = m*50;
+    gGrider->levelHeight = gLevelBox.h;
+    gGrider->levelWidth = gLevelBox.w;
+    gGrider->gridHeight = n;
+    gGrider->gridWidth = m;
+    gPathFinder->init(n, m, 4);
+    for(int i = 0; i < n; i++){
+        for(int j = 0; j < m; j++){
+            char a;
+            ifs >> a;
+            if (a == '0') {
+                gPathFinder->setMatrix(j, i, TRPathFinderMatrixObstacle);
+                createMapTile("floor/grass", TRMapTileTypeGround, j*50, i*50, 50, 50);
+            }else{
+                gPathFinder->setMatrix(j, i, TRPathFinderMatrixRoad);
+            }
         }
-    }else if(e.type == SDL_KEYUP && e.key.repeat == 0){
-        switch (e.key.keysym.sym) {
-            case SDLK_UP:
-                hero -> endMoving();
-                break;
-            case SDLK_DOWN:
-                hero -> endMoving();
-                break;
-            case SDLK_LEFT:
-                hero -> endMoving();
-                break;
-            case SDLK_RIGHT:
-                hero -> endMoving();
-                break;
-            default:
-                break;
+    }
+}
+
+
+void TRGameController::gameOver(){
+    flgGameStarted = false;
+    flgGamePaused = false;
+}
+
+void TRGameController::handleEvent(SDL_Event &e){
+    while (SDL_PollEvent(&e)) {
+        if(e.type == SDL_QUIT){
+            gameOver();
+        }else if (e.type == SDL_KEYDOWN ) {
+            switch (e.key.keysym.sym) {
+                case SDLK_UP:
+                    if(e.key.repeat == 0){
+                        keyCnt++;
+                    }
+                    hero -> startMoveUp();
+                    break;
+                case SDLK_DOWN:
+                    if(e.key.repeat == 0){
+                        keyCnt++;
+                    }
+                    hero -> startMoveDown();
+                    break;
+                case SDLK_LEFT:
+                    if(e.key.repeat == 0){
+                        keyCnt++;
+                    }
+                    hero -> startMoveLeft();
+                    break;
+                case SDLK_RIGHT:
+                    if(e.key.repeat == 0){
+                        keyCnt++;
+                    }
+                    hero -> startMoveRight();
+                    break;
+                case SDLK_z:
+                    flgAttackPerformed = hero -> performAttack();
+                case SDLK_x:
+                    lastFire = hero -> fire();
+                    flgFired = lastFire != NULL;
+                default:
+                    break;
+            }
+        }else if(e.type == SDL_KEYUP && e.key.repeat == 0){
+            switch (e.key.keysym.sym) {
+                case SDLK_UP:
+                case SDLK_DOWN:
+                case SDLK_LEFT:
+                case SDLK_RIGHT:
+                    if(e.key.repeat == 0){
+                        keyCnt--;
+                    }
+                    if (keyCnt == 0) {
+                        hero -> endMoving();
+                    }
+                    break;
+                default:
+                    break;
+            }
         }
     }
 }
@@ -84,6 +132,7 @@ void TRGameController::runFrame(){
     if(!isGameRunning()){
         return;
     }
+    
     //Calculate moving
     for(std::list<TREnemy*>::iterator it = gEnemyList.begin(); it != gEnemyList.end(); it++){
         (*it) -> move();
@@ -112,6 +161,16 @@ void TRGameController::runFrame(){
                 hero -> attack((*it));
             }
         }
+        flgAttackPerformed = false;
+    }
+    
+    //Calculate Being Attacks
+    for(std::list<TREnemy*>::iterator it = gEnemyList.begin(); it != gEnemyList.end(); it++){
+        if (checkCollision(hero->getBoxRect(), (*it)->getBoxRect())) {
+            if(!(*it)->startAttacking()){
+                (*it)->attack(hero, (*it)->getDamage());
+            }
+        }
     }
     
     //Delete dead Enemys
@@ -136,11 +195,13 @@ void TRGameController::runFrame(){
     for(std::list<TRBullet*>::iterator it = gBulletList.begin();it != gBulletList.end();it++){
         (*it) -> render();
     }
+    hero -> render();
 }
 
 
 TRGameController::TRGameController(){
-    
+    gLevelBox = {0,0,1920,1080};
+    keyCnt = 0;
 }
 
 TRGameController::~TRGameController(){
@@ -287,7 +348,7 @@ void TRGameController::loadResources(){
         for(int j = 1; j <= fcnt;j++){
             int x,y,h,w;
             ifs >> x >> y >> h >> w;
-            ani -> appendClipRect({x,y,h,w});
+            ani -> appendClipRect({x,y,w,h});
         }
         ani -> setRateByFramePerClip(fpc);
         gAnimatorKeyMap[name] = ani;
@@ -328,12 +389,12 @@ void TRGameController::loadResources(){
         for(int j = 0; j < 4; j++){
             int x,y,h,w;
             ifs >> x >> y >> h >> w;
-            enm -> setStaticClip({x,y,h,w}, (TRDirection)j);
+            enm -> setStaticClip({x,y,w,h}, (TRDirection)j);
         }
         for(int j = 0; j < 4; j++){
             int x,y,h,w;
             ifs >> x >> y >> h >> w;
-            enm -> setDeathClip({x,y,h,w}, (TRDirection)j);
+            enm -> setDeathClip({x,y,w,h}, (TRDirection)j);
         }
         ifs >> flg;
         if(flg == "yes"){
@@ -375,6 +436,7 @@ void TRGameController::loadResources(){
         int hp,arm,dmg,vel,cd,bdmg,bvl;
         ifs >> hp >> arm >> dmg >> vel >> cd >> bdmg >> bvl;
         ho -> setHP(hp);
+        ho -> setMaxHP(hp);
         ho -> setVelocity(vel);
         ho -> setDamage(dmg);
         ho -> setAttackCD(cd);
@@ -386,12 +448,12 @@ void TRGameController::loadResources(){
         for(int j = 0; j < 4; j++){
             int x,y,h,w;
             ifs >> x >> y >> h >> w;
-            ho -> setStaticClip({x,y,h,w}, (TRDirection)j);
+            ho -> setStaticClip({x,y,w,h}, (TRDirection)j);
         }
         for(int j = 0; j < 4; j++){
             int x,y,h,w;
             ifs >> x >> y >> h >> w;
-            ho -> setDeathClip({x,y,h,w}, (TRDirection)j);
+            ho -> setDeathClip({x,y,w,h}, (TRDirection)j);
         }
         std::string flg;
         ifs >> flg;
@@ -482,6 +544,9 @@ void TRGameController::createMapTile(std::string textureKey,TRMapTileType type,i
     tile -> setY(y);
     tile -> setWidth(w);
     tile -> setHeight(h);
+    tile -> setCurClip({0,0,w,h});
+    tile -> linkCameraRect(&gCameraBox);
+    tile -> linkLevelRect(&gLevelBox);
     tile -> linkTexture(gTextureKeyMap[textureKey]);
     gMapTileList.insert(gMapTileList.end(), tile);
 }
@@ -493,6 +558,8 @@ void TRGameController::createEnemy(std::string defaultKey,int x,int y,int h,int 
     ce -> setY(y);
     ce -> setHeight(h);
     ce -> setWidth(w);
+    ce -> linkHero(hero);
+    ce -> startMoving();
     gEnemyList.insert(gEnemyList.end(), ce);
 }
 
@@ -509,15 +576,16 @@ void TRGameController::createHero(std::string defaultKey,int x,int y,int h,int w
 
 
 void TRGameController::startGame(){
-    
+    flgGameStarted = true;
+    flgGamePaused = false;
 }
 
 void TRGameController::pauseGame(){
-    
+    flgGamePaused = true;
 }
 
 void TRGameController::resumeGame(){
-    
+    flgGamePaused = false;
 }
 
 bool TRGameController::isGamePausing(){

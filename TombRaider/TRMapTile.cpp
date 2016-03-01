@@ -8,6 +8,10 @@
 
 #include "TRMapTile.hpp"
 
+TRMapTile::TRMapTile(){
+    setCurClip({0,0,getWidth(),getHeight()});
+}
+
 bool TRMapTile::isPassBy(){
     return flgPassBy;
 }

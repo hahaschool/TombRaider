@@ -8,6 +8,13 @@
 
 #include "TREnemy.hpp"
 
+TREnemy::TREnemy(){
+    anilock = false;
+    anilockrem = 0;
+    alive = true;
+    chasing = false;
+}
+
 #pragma mark - 贴图和动画配置
 bool TREnemy::isWalkingAnimated(){
     return walkingAnimated;
@@ -196,6 +203,7 @@ void TREnemy::planRoute(bool force){
     grider->convertLevelTopLeftToGrid(getX(), getY(), gridX, gridY);
     grider->convertLevelTopLeftToGrid(hero->getX(), hero->getY(), hero_gridX, hero_gridY);
     if(force || hero_gridX != prv_hero_x || hero_gridY != prv_hero_y){
+        prv_hero_x = hero_gridX,prv_hero_y = hero_gridY;
         pathFinder->setStartingPoint(gridX, gridY);
         pathFinder->setTargetPoint(hero_gridX, hero_gridY);
         pathFinder->findPath();
@@ -204,6 +212,9 @@ void TREnemy::planRoute(bool force){
         while(pathFinder->extractPath(tx, ty)){
             grider->convertGridToLevelTopLeft(tx, ty, ax, ay);
             path.push(std::make_pair(ax,ay));
+        }
+        if (path.size()) {
+            path.pop();
         }
     }
 }
@@ -223,12 +234,16 @@ void TREnemy::move(){
         if(type == TREnemyRandom){
             moveRandom();
         }else if(type == TREnemySmart){
+            if(std::abs(hero->getX()-getX()) + std::abs(hero->getY()-getY()) > rand()%1000){
+                moveRandom();
+            }
             moveAlongPath();
         }
     }
 }
 
 void TREnemy::moveAlongPath(){
+    planRoute(false);
     if(path.empty()){
         return;
     }
@@ -236,7 +251,7 @@ void TREnemy::moveAlongPath(){
     int topY = path.front().second;
     int curX = getX();
     int curY = getY();
-    if(curX != topX){
+    if(!undoed && curX != topX){
         if(std::abs(curX - topX) < vel){
             if(curX > topX){
                 setDirection(TRDirectionLeft);
@@ -257,9 +272,11 @@ void TREnemy::moveAlongPath(){
         if(curX == topX && curY == topY){
             path.pop();
         }
+        setX(curX);
         return;
     }
     if(curY != topY){
+        undoed = false;
         if(std::abs(curY - topY) < vel){
             if(curY > topY){
                 setDirection(TRDirectionUp);
@@ -280,26 +297,36 @@ void TREnemy::moveAlongPath(){
         if(curX == topX && curY == topY){
             path.pop();
         }
+        setY(curY);
         return;
     }
+    if(curX == topX && curY == topY){
+        path.pop();
+    }
+    return;
 }
 
 void TREnemy::moveRandom(){
-    int curdir = rand()%4;
-    setDirection(curdir);
-    if(curdir == TRDirectionUp){
-        setVelY(-vel);
-        setVelX(0);
-    }else if(curdir == TRDirectionLeft){
-        setVelX(-vel);
-        setVelY(0);
-    }else if(curdir == TRDirectionRight){
-        setVelX(vel);
-        setVelY(0);
-    }else{
-        setVelX(0);
-        setVelY(vel);
+    if(randrem >= 30){
+        int curdir = rand()%4;
+        setDirection(curdir);
+        if(curdir == TRDirectionUp){
+            setVelY(-vel);
+            setVelX(0);
+        }else if(curdir == TRDirectionLeft){
+            setVelX(-vel);
+            setVelY(0);
+        }else if(curdir == TRDirectionRight){
+            setVelX(vel);
+            setVelY(0);
+        }else{
+            setVelX(0);
+            setVelY(vel);
+        }
+        randrem = 0;
+        return;
     }
+    randrem++;
     TRSprite::move();
 }
 

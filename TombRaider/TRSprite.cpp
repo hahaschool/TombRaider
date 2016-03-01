@@ -7,6 +7,14 @@
 //
 
 #include "TRSprite.hpp"
+TRSprite::TRSprite(){
+    mVelX = mVelY = 0;
+    flgMovingAnimated = false;
+    flgStaticAnimated = false;
+    flgFreeze = false;
+    flgMoving = false;
+    mDirection = TRDirectionUp;
+}
 
 void TRSprite::setVelX(int velX){
     mVelX = velX;
@@ -90,6 +98,7 @@ void TRSprite::move(){
 }
 
 void TRSprite::undo(){
+    undoed = true;
     setX(getX() - mVelX);
     setY(getY() - mVelY);
 }
