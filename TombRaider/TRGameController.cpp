@@ -45,16 +45,77 @@ void TRGameController::loadMapFromFile(std::string path){
     gGrider->levelWidth = gLevelBox.w;
     gGrider->gridHeight = n;
     gGrider->gridWidth = m;
-    gPathFinder->init(n, m, 4);
+    gPathFinder->init(n, m, 10);
+    for(int i=0;i<=50;i++){
+        for(int j=0;j<=50;j++){
+            mapIs[i][j] = 0;
+        }
+    }
     for(int i = 0; i < n; i++){
         for(int j = 0; j < m; j++){
             char a;
             ifs >> a;
-            if (a == '0') {
-                gPathFinder->setMatrix(j, i, TRPathFinderMatrixObstacle);
-                createMapTile("floor/grass", TRMapTileTypeGround, j*50, i*50, 50, 50);
-            }else{
-                gPathFinder->setMatrix(j, i, TRPathFinderMatrixRoad);
+            switch(a){
+                case '0':
+                    gPathFinder->setMatrix(j, i, TRPathFinderMatrixObstacle);
+                    createMapTile("wall/iron", TRMapTileTypeGround, j*50, i*50, 50, 50);
+                    break;
+                case 'o':
+                    gPathFinder->setMatrix(j,i,TRPathFinderMatrixRoad);
+                    createMapTile("wall/out",TRMapTileTypeTeleport,j*50,i*50,50,50);
+                    mapIs[i][j] = 5;
+                    break;
+                case 'w':
+                    gPathFinder->setMatrix(j,i,TRPathFinderMatrixObstacle);
+                    createMapTile("wall/shui", TRMapTileTypeGround, j*50, i*50, 50, 50);
+                    mapIs[i][j] = 2;
+                    break;
+                case 't':
+                    createMapTile("map/tree",TRMapTileTypeGround,j*50,i*50,50,50);
+                    gPathFinder->setMatrix(j,i,TRPathFinderMatrixRoad);
+                    mapIs[i][j] = 1;
+                    break;
+                case 'i':
+                    createMapTile("inside/iron",TRMapTileTypeGround, j*50, i*50, 50, 50);
+                    break;
+                case '1':
+                    gPathFinder->setMatrix(j, i, TRPathFinderMatrixRoad);
+                    break;
+                case 'm':
+                    createMapTile("mummy",TRMapTileTypeGround, j*50, i*50, 50, 50);
+                    //createMapTile("action/catch",TRMapTileTypeGround,j*50+35,i*50+35,15,15);
+                    break;
+                case 'k':
+                    createMapTile("map/yaoshi",TRMapTileTypeGround, j*50, i*50, 35, 35);
+                    //createMapTile("action/catch",TRMapTileTypeGround,j*50+35,i*50+35,15,15);
+                    mapIs[i][j] = 3;
+                    break;
+                case '$':
+                    createMapTile("map/trousure",TRMapTileTypeGround, j*50, i*50, 40, 40);
+                    mapIs[i][j] = 3;
+                    break;
+                case 'r':
+                    createMapTile("map/bullets",TRMapTileTypeGround, j*50, i*50, 50, 50);
+                    mapIs[i][j] = 3;
+                    break;
+                case '+':
+                    createMapTile("map/hp",TRMapTileTypeGround, j*50, i*50, 40, 40);
+                    mapIs[i][j] = 3;
+                    break;
+                case 'l':
+                    createMapTile("map/ganlanzhi",TRMapTileTypeGround, j*50, i*50, 50, 50);
+                    //createMapTile("action/catch",TRMapTileTypeGround,j*50+35,i*50+35,15,15);
+                    mapIs[i][j] = 3;
+                    break;
+                case 'b':
+                    createMapTile("map/brick",TRMapTileTypeGround, j*50, i*50, 50, 50);
+                    break;
+                case 'g':
+                    createEnemy("guard",j*50,i*50,50,37.5);
+                    break;
+                case 'p':
+                    //createEnemy("pharaoh",j*50,i*50,50,50);
+                    break;
             }
         }
     }
@@ -72,25 +133,25 @@ void TRGameController::handleEvent(SDL_Event &e){
             gameOver();
         }else if (e.type == SDL_KEYDOWN ) {
             switch (e.key.keysym.sym) {
-                case SDLK_UP:
+                case SDLK_UP:case SDLK_w:
                     if(e.key.repeat == 0){
                         keyCnt++;
                     }
                     hero -> startMoveUp();
                     break;
-                case SDLK_DOWN:
+                case SDLK_DOWN:case SDLK_s:
                     if(e.key.repeat == 0){
                         keyCnt++;
                     }
                     hero -> startMoveDown();
                     break;
-                case SDLK_LEFT:
+                case SDLK_LEFT:case SDLK_a:
                     if(e.key.repeat == 0){
                         keyCnt++;
                     }
                     hero -> startMoveLeft();
                     break;
-                case SDLK_RIGHT:
+                case SDLK_RIGHT:case SDLK_d:
                     if(e.key.repeat == 0){
                         keyCnt++;
                     }
@@ -98,9 +159,18 @@ void TRGameController::handleEvent(SDL_Event &e){
                     break;
                 case SDLK_z:
                     flgAttackPerformed = hero -> performAttack();
+                    gBgm->playMusic("Resources/Bgm/hero_battle.wav",true);
                 case SDLK_x:
                     lastFire = hero -> fire();
                     flgFired = lastFire != NULL;
+                    break;
+                case SDLK_c:
+                    if(mapTileBeCatched){
+                        gBgm->playMusic("Resources/Bgm/getSomething.wav",true);
+                        gPathFinder->setMatrix(someThingJ, someThingI, TRPathFinderMatrixRoad);
+                        //gMapTile->setObjectBeCatched(someThingJ,someThingI,TRPathFinderMatrixRoad);
+                        mapTileBeCatched = false;
+                    }
                 default:
                     break;
             }
@@ -143,9 +213,31 @@ void TRGameController::runFrame(){
         }
     }
     hero -> move();
+    
     for(std::list<TRMapTile*>::iterator itt = gMapTileList.begin();itt != gMapTileList.end();itt++){
-        if(checkCollision(hero->getBoxRect(), (*itt)->getBoxRect())){
+        if(checkCollision(hero->getBoxRect(), (*itt)->getBoxRect())) {
+            gBgm->playMusic("Resources/Bgm/碰到.wav",true);
             hero -> undo();
+            int i = (*itt)->getBoxRect().y/50;
+            int j = (*itt)->getBoxRect().x/50;
+            if(mapIs[i][j] == 3)
+            {
+                createMapTile("action/catch",TRMapTileTypeGround,j*50+25,i*50+25,15,15);
+                mapTileBeCatched = true;
+                someThingJ = j;
+                someThingI = i;
+                cerr << "someThingJ: " << someThingJ << " someThingI:" << someThingI << endl;
+            }else if(mapIs[i][j] == 2)
+            {
+                
+            }else if(mapIs[i][j] == 1)
+            {
+                
+            }else if(mapIs[i][j] == 5)
+            {
+                nextMap();
+            }
+            
         }
     }
     
@@ -253,6 +345,7 @@ void TRGameController::loadResources(){
     heroTextureArray.clear();
     defaultEnemyMap.clear();
     defaultHeroMap.clear();
+    defaultHpMap.clear();
     
     //载入地图贴图
     std::ifstream ifs("Resources/Config/Texture_Maptile.cfg");
@@ -513,6 +606,26 @@ void TRGameController::loadResources(){
         mapPathMap[name] = path;
         mapPathArray[id] = path;
     }
+    
+    //载入血条贴图
+    ifs.open("Resources/Config/Equip.cfg");
+    while (ifs.peek() == '/') {
+        std::string filter;
+        std::getline(ifs,filter);
+    }
+    ifs >> n;
+    equipTextureArray.resize(n+1);
+    for(int i = 1; i <= n; i++){
+        int id;
+        std::string name,path;
+        TRTexture *tex = new TRTexture;
+        tex -> linkRenderer(gRenderer);
+        ifs >> id >> name >> path;
+        tex -> loadFromFile(path);
+        equipTextureArray[id] = tex;
+        gTextureKeyMap[name] = tex;
+    }
+    ifs.close();
 }
 
 
@@ -570,9 +683,23 @@ void TRGameController::createHero(std::string defaultKey,int x,int y,int h,int w
     hr -> setY(y);
     hr -> setHeight(h);
     hr -> setWidth(w);
+    this -> createHp("bloodBar",x,y,h-5,w);
     hero = hr;
 }
 
+void TRGameController::createHp(std::string defaultKey,int x,int y,int h,int w){
+    TRhp *hp = new TRhp;
+    //*hp = *defaultHpMap[defaultKey];
+    hp -> setX(x);
+    hp -> setY(y);
+    hp -> setHeight(h);
+    hp -> setWidth(w);
+    //hp -> setCurClip({0,0,w,h});
+    //hp -> linkCameraRect(&gCameraBox);
+    //hp -> linkLevelRect(&gLevelBox);
+    hp -> linkTexture(gTextureKeyMap[defaultKey]);
+    heroHp = hp;
+}
 
 
 void TRGameController::startGame(){
@@ -600,40 +727,53 @@ bool TRGameController::isGameRunning(){
 }
 
 bool TRGameController::checkCollision(SDL_Rect a, SDL_Rect b){
-        //The sides of the rectangles
-        int leftA, leftB;
-        int rightA, rightB;
-        int topA, topB;
-        int bottomA, bottomB;
-        
-        //Calculate the sides of rect A
-        leftA = a.x;
-        rightA = a.x + a.w;
-        topA = a.y;
-        bottomA = a.y + a.h;
-        
-        //Calculate the sides of rect B
-        leftB = b.x;
-        rightB = b.x + b.w;
-        topB = b.y;
-        bottomB = b.y + b.h;
-        
-        //If any of the sides from A are outside of B
-        if( bottomA <= topB ){
-            return false;
-        }
-        if( topA >= bottomB ){
-            return false;
-        }
-        if( rightA <= leftB ){
-            return false;
-        }
-        if( leftA >= rightB ){
-            return false;
-        }
-        
-        //If none of the sides from A are outside B
-        return true;
+    /*if(a.y == hero->getBoxRect().y && a.x == hero->getBoxRect().x && gPathFinder->mat[b.y][b.x] == 1){
+     return false;
+     }*/
+    //The sides of the rectangles
+    if(mapIs[b.y/50][b.x/50] == 1)
+    {
+        return false;
+    }
+    if(mapIs[b.y/50][b.x/50] == 2)
+    {
+        //hero->setVelocity(3);
+        return false;
+    }
+    
+    int leftA, leftB;
+    int rightA, rightB;
+    int topA, topB;
+    int bottomA, bottomB;
+    
+    //Calculate the sides of rect A
+    leftA = a.x;
+    rightA = a.x + a.w;
+    topA = a.y;
+    bottomA = a.y + a.h;
+    
+    //Calculate the sides of rect B
+    leftB = b.x;
+    rightB = b.x + b.w;
+    topB = b.y;
+    bottomB = b.y + b.h;
+    
+    //If any of the sides from A are outside of B
+    if( bottomA <= topB ){
+        return false;
+    }
+    if( topA >= bottomB ){
+        return false;
+    }
+    if( rightA <= leftB ){
+        return false;
+    }
+    if( leftA >= rightB ){
+        return false;
+    }
+    
+    //If none of the sides from A are outside B
+    return true;
 }
 
 void TRGameController::setCamera(int h,int w){
@@ -649,4 +789,7 @@ void TRGameController::linkPathfinder(TRPathFinder *pf){
     gPathFinder = pf;
 }
 
-
+void TRGameController::nextMap()
+{
+    //this->loadMapFromFile();
+}

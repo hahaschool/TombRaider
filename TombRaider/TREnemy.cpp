@@ -234,10 +234,13 @@ void TREnemy::move(){
         if(type == TREnemyRandom){
             moveRandom();
         }else if(type == TREnemySmart){
-            if(std::abs(hero->getX()-getX()) + std::abs(hero->getY()-getY()) > rand()%1000){
+            if(std::abs(hero->getX()-getX()) + std::abs(hero->getY()-getY()) > 500){
+                clearRoute();
                 moveRandom();
+            }else{
+                setVelXY(0);
+                moveAlongPath();
             }
-            moveAlongPath();
         }
     }
 }

@@ -22,6 +22,9 @@
 #include "TREnemy.hpp"
 #include "TRSprite.hpp"
 #include "TRHero.hpp"
+#include "TRBgm.h"
+#include "TRhp.h"
+#include "TRItem.hpp"
 
 class TRGameController{
 public:
@@ -83,7 +86,11 @@ public:
     //基本碰撞检测
     bool checkCollision(SDL_Rect a,SDL_Rect b);
     
+    //下一关
+    void nextMap();
     
+    
+    void createHp(std::string defaultKey,int x,int y,int h,int w);
 private:
     bool flgAttackPerformed;
     bool flgFired;
@@ -108,6 +115,8 @@ private:
     std::vector<TRTexture *> heroTextureArray;
     std::map<std::string,TRTexture*> gTextureKeyMap;
     
+    std::vector<TRTexture *>equipTextureArray;
+    
     //TRAnimator表
     std::vector<TRAnimator*> animatorArray;
     std::map<std::string,TRAnimator*> gAnimatorKeyMap;
@@ -116,9 +125,14 @@ private:
     std::map<std::string,TREnemy *> defaultEnemyMap;
     std::map<std::string,TRHero *> defaultHeroMap;
     
+    std::map<std::string,TRhp *>defaultHpMap;
+    
     //全局Grider和寻路器
     TRGrider *gGrider;
     TRPathFinder *gPathFinder;
+    TRGameController *gGameController;
+    TRBgm *gBgm;
+    TRhp *heroHp;
     
     //全局渲染器
     SDL_Renderer *gRenderer;
@@ -132,6 +146,9 @@ private:
     //子弹列表
     std::list<TRBullet*> gBulletList;
     
+    //道具列表
+    std::list<TRItem*> gItemList;
+    
     //英雄单位
     TRHero *hero;
     
@@ -139,6 +156,12 @@ private:
     SDL_Rect gCameraBox;
     //全局地图大小
     SDL_Rect gLevelBox;
+    
+    int mapIs[51][51];
+    TRMapTile *gMapTile;
+    bool mapTileBeCatched;
+    int someThingJ;
+    int someThingI;
 };
 
 #endif /* TRGameController_hpp */

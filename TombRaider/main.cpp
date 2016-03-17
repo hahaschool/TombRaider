@@ -36,8 +36,8 @@ bool init(){
     
     
     
-    if(SDL_Init(SDL_INIT_EVERYTHING) < 0){
-        printf("Error: SDL_Init Failed. SDL Error: %s\n",SDL_GetError());
+    if( SDL_Init( SDL_INIT_VIDEO | SDL_INIT_AUDIO ) < 0 ){
+        printf( "SDL could not initialize! SDL Error: %s\n", SDL_GetError() );
         success = false;
     }else{
         //线性贴图过滤
@@ -64,6 +64,12 @@ bool init(){
                     printf("Error:SDL_image init failed.SDL_image Error: %s\n",IMG_GetError());
                     success = false;
                 }
+                if( Mix_OpenAudio( 44100, MIX_DEFAULT_FORMAT, 2, 2048 ) < 0 )
+                {
+                    printf( "SDL_mixer could not initialize! SDL_mixer Error: %s\n", Mix_GetError() );
+                    success = false;
+                }
+
             }
         }
     }
@@ -105,7 +111,7 @@ int main(int argc, const char * argv[]) {
         //dubug
         gGameController->loadMapFromFile("Resources/Mapdata/test.map");
         gGameController -> createHero("hahaschool", 50, 50, 48, 32);
-        for(int i = 1; i <= 2; i++){
+        for(int i = 1; i <= 10; i++){
             for(int j = 1; j<= 10; j++){
                 gGameController -> createEnemy("bat", 10*i+50, 10*j+50, 50, 50);
             }
