@@ -48,6 +48,8 @@ void TRGameController::initialize(){
     defaultEnemyMap.clear();
     defaultHeroMap.clear();
     defaultHpMap.clear();
+    defaultItemMap.clear();
+    defaultTrapMap.clear();
 }
 
 void TRGameController::clearStage(){
@@ -56,6 +58,7 @@ void TRGameController::clearStage(){
     gEnemyList.clear();
     gBulletList.clear();
     gItemList.clear();
+    gTrapList.clear();
 }
 
 #pragma mark - 文件读入
@@ -86,8 +89,8 @@ void TRGameController::loadMapFromFile(std::string path){
                     createMapTile("wall/out",TRMapTileTypeTeleport,j*50,i*50,50,50);
                     break;
                 case 'w':
-                    gPathFinder->setMatrix(j,i,TRPathFinderMatrixObstacle);
-                    createMapTile("wall/shui", TRMapTileTypeWall, j*50, i*50, 50, 50);
+                    gPathFinder->setMatrix(j,i,TRPathFinderMatrixRoad);
+                    createTrap("trap/slow/water", j*50, i*50, 50, 50);
                     break;
                 case 't':
                     createMapTile("map/tree",TRMapTileTypeGround,j*50,i*50,50,50);
@@ -118,7 +121,8 @@ void TRGameController::loadMapFromFile(std::string path){
                     createItem("item/heal/herb", j*50, i*50, 50, 50);
                     break;
                 case 'b':
-                    createMapTile("map/brick",TRMapTileTypeGround, j*50, i*50, 50, 50);
+                    gPathFinder->setMatrix(j, i, TRPathFinderMatrixObstacle);
+                    createMapTile("map/brick",TRMapTileTypeWall, j*50, i*50, 50, 50);
                     break;
                 case 'g':
                     createEnemy("guard",j*50,i*50,50,37.5);
@@ -244,6 +248,7 @@ void TRGameController::loadDefault(){
     loadDefaultHero();
     loadDefaultMaplist();
     loadDefaultItem();
+    loadDefaultTrap();
 }
 
 #pragma mark 读入动画器默认值
@@ -490,6 +495,75 @@ void TRGameController::loadDefaultItem(){
     ifs.close();
 }
 
+#pragma mark 读入陷阱默认值
+void TRGameController::loadDefaultTrap(){
+    std::ifstream ifs("Resources/Config/Trap.cfg");
+    int n;
+    while (ifs.peek() == '/') {
+        std::string filter;
+        std::getline(ifs, filter);
+    }
+    ifs >> n;
+    for(int i = 1;i <= n; i++){
+        int id,ww,hh,arg1;
+        std::string name,tname,type1,type2;
+        ifs >> id >> name >> tname >> ww >> hh >> type1 >> arg1 >> type2;
+        TRTrap *ntr = new TRTrap;
+        ntr -> setPassBy(true);
+        ntr -> linkCameraRect(&gCameraBox);
+        ntr -> linkLevelRect(&gLevelBox);
+        ntr -> linkTexture(gTextureKeyMap[tname]);
+        ntr -> setWidth(ww);
+        ntr -> setHeight(hh);
+        ntr -> setColliderFactor(0.8);
+        ntr -> setCurClip({0,0,ww,hh});
+        if(type1 == "SLOW"){
+            ntr -> setSlowdownValue(arg1);
+            if (type2 == "EPHERMAL") {
+                ntr -> setType(TRTrapSlow | TRTrapEphermal);
+            }else{
+                ntr -> setType(TRTrapSlow | TRTrapLasting);
+                int sleeptime,arg2;
+                ifs >> sleeptime >> arg2;
+                ntr -> setSleepTime(sleeptime);
+                ntr -> setDebuffInterval(arg2);
+            }
+        }else if(type1 == "BLEED"){
+            ntr -> setBleedValue(arg1);
+            if (type2 == "EPHERMAL") {
+                ntr -> setType(TRTrapBleed | TRTrapEphermal);
+            }else{
+                ntr -> setType(TRTrapBleed | TRTrapLasting);
+                int sleeptime,arg2;
+                ifs >> sleeptime >> arg2;
+                ntr -> setSleepTime(sleeptime);
+                ntr -> setDebuffInterval(arg2);
+            }
+        }else if(type1 == "FREEZE"){
+            if (type2 == "LAST") {
+                ntr -> setType(TRTrapFreeze | TRTrapLasting);
+                int arg2;
+                ifs >> arg2;
+                ntr -> setSleepTime(arg1);
+                ntr -> setDebuffInterval(arg2);
+                ntr -> setColliderFactor(0.1);
+            }
+        }else if(type1 == "NOGUN"){
+            if (type2 == "EPHERMAL") {
+                ntr -> setType(TRTrapNoGun | TRTrapEphermal);
+            }else{
+                ntr -> setType(TRTrapNoGun | TRTrapLasting);
+                int sleeptime,arg2;
+                ntr -> setSleepTime(sleeptime);
+                ntr -> setDebuffInterval(arg2);
+            }
+        }
+        defaultTrapMap[name] = ntr;
+    }
+    ifs.close();
+}
+
+
 void TRGameController::gameOver(){
     flgGameStarted = false;
     flgGamePaused = false;
@@ -629,6 +703,13 @@ void TRGameController::runFrame(){
         }
     }
     
+    //Check Traps
+    for(std::list<TRTrap*>::iterator it = gTrapList.begin();it != gTrapList.end();it++){
+        if (checkCollision(hero->getBoxRect(), (*it)->getColliderRect())) {
+            (*it) -> activate();
+        }
+    }
+    
     //Calculate debuffs
     
     
@@ -644,6 +725,9 @@ void TRGameController::runFrame(){
         (*it) -> render();
     }
     for(std::list<TRItem*>::iterator it = gItemList.begin();it != gItemList.end();it++){
+        (*it) -> render();
+    }
+    for(std::list<TRTrap*>::iterator it = gTrapList.begin();it != gTrapList.end();it++){
         (*it) -> render();
     }
     hero -> render();
@@ -750,7 +834,6 @@ void TRGameController::createHero(std::string defaultKey,int x,int y,int h,int w
     hr -> setY(y);
     hr -> setHeight(h);
     hr -> setWidth(w);
-    this -> createHp("bloodBar",x,y,h-5,w);
     hero = hr;
 }
 #pragma mark 创建道具
@@ -764,6 +847,18 @@ void TRGameController::createItem(std::string defaultKey, int x, int y, int h, i
     ci -> linkHero(hero);
     gItemList.insert(gItemList.end(), ci);
 }
+#pragma mark 创建陷阱
+void TRGameController::createTrap(std::string defaultKey, int x, int y, int h, int w){
+    TRTrap *ctr = new TRTrap;
+    *ctr = *defaultTrapMap[defaultKey];
+    ctr -> setX(x);
+    ctr -> setY(y);
+    ctr -> setHeight(h);
+    ctr -> setWidth(w);
+    ctr -> linkHero(hero);
+    gTrapList.insert(gTrapList.end(), ctr);
+}
+
 
 void TRGameController::createHp(std::string defaultKey,int x,int y,int h,int w){
     TRhp *hp = new TRhp;

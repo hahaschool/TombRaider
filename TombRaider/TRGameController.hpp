@@ -25,6 +25,7 @@
 #include "TRBgm.h"
 #include "TRhp.h"
 #include "TRItem.hpp"
+#include "TRTrap.hpp"
 
 class TRGameController{
 public:
@@ -64,6 +65,8 @@ public:
     void loadDefaultMaplist();
     //读入道具默认值
     void loadDefaultItem();
+    //杜如陷阱默认值
+    void loadDefaultTrap();
     //载入地图
     void loadMapFromFile(std::string path);
     
@@ -101,6 +104,8 @@ public:
     void createHero(std::string defaultKey,int x,int y,int h,int w);
     //创建道具
     void createItem(std::string defaultKey,int x,int y,int h,int w);
+    //创建陷阱
+    void createTrap(std::string defaultKey,int x,int y,int h,int w);
     //创建血条
     void createHp(std::string defaultKey,int x,int y,int h,int w);
     
@@ -144,11 +149,11 @@ private:
     std::vector<TRAnimator*> animatorArray;
     std::map<std::string,TRAnimator*> gAnimatorKeyMap;
     
-    //TREnemy Hero Item预置
+    //TREnemy Hero Item Trap预置
     std::map<std::string,TREnemy *> defaultEnemyMap;
     std::map<std::string,TRHero *> defaultHeroMap;
     std::map<std::string,TRItem *> defaultItemMap;
-    
+    std::map<std::string,TRTrap *> defaultTrapMap;
     
     
     std::map<std::string,TRhp *>defaultHpMap;
@@ -173,7 +178,8 @@ private:
     
     //道具列表
     std::list<TRItem*> gItemList;
-    
+    //陷阱列表
+    std::list<TRTrap*> gTrapList;
     
     //即将捡起物品标识
     bool willPickupItem;

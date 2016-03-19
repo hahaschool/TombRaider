@@ -111,8 +111,8 @@ int main(int argc, const char * argv[]) {
         //dubug
         gGameController -> createHero("hahaschool", 50, 50, 48, 32);
         gGameController->loadMapFromFile("Resources/Mapdata/test.map");
-        for(int i = 1; i <= 10; i++){
-            for(int j = 1; j<= 10; j++){
+        for(int i = 1; i <= 1; i++){
+            for(int j = 1; j<= 5; j++){
                 gGameController -> createEnemy("bat", 10*i+50, 10*j+50, 50, 50);
             }
         }

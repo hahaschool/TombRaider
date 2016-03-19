@@ -12,6 +12,9 @@ TRHero::TRHero(){
     const int INF = 0x3f3f3f3f;
     anilock = false;
     anilockrem = 0;
+    atk_cd = atk_cd_rem = 0;
+    fire_cd = 0;
+    bullet_cd = bullet_cd_rem = 0;
     alive = true;
     attacking = false;
     standingAnimated = false;
@@ -19,7 +22,9 @@ TRHero::TRHero(){
     attackingAnimated = false;
     firingAnimated = false;
     flgdebuff_slow = false;
+    debuff_slow_dmg = debuff_slow_rem = 0;
     flgdebuff_bleed = false;
+    debuff_bleed_dmg = debuff_bleed_rem = 0;
     flgdebuff_freeze = false;
     flgdebuff_nogun = false;
 }
@@ -464,11 +469,11 @@ SDL_Rect TRHero::getAttackRect(){
     if (getDirection() == TRDirectionUp) {
         ret.y -= getHeight()*atkFactor;
         ret.h += getHeight()*atkFactor;
-    }else if(getDirection() == TRDirectionLeft){
+    }else if(getDirection() == TRDirectionRight){
         ret.w += getWidth()*atkFactor;
     }else if(getDirection() == TRDirectionDown){
         ret.h += getHeight()*atkFactor;
-    }else if(getDirection() == TRDirectionRight){
+    }else if(getDirection() == TRDirectionLeft){
         ret.x -= getWidth()*atkFactor;
         ret.w += getWidth()*atkFactor;
     }
