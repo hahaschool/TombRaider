@@ -109,6 +109,9 @@ public:
     bool isWalkingAnimated();
     bool isFiringAnimated();
     
+    //攻击范围判定
+    void setAttackRangeFactor(double atkf);
+    SDL_Rect getAttackRect();
     
     //死亡画像
     void setDeathClip(SDL_Rect clipRect,TRDirection dir);
@@ -167,6 +170,8 @@ private:
     //death rect
     SDL_Rect deathRect[4];
     
+    //攻击范围系数
+    double atkFactor;
 };
 
 #endif /* TRHero_hpp */

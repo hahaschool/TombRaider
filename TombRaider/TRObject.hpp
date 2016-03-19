@@ -15,7 +15,6 @@
 #include <string>
 #include <vector>
 
-
 class TRObject{
 public:
     //渲染用Rect的Setter和Getter
@@ -33,6 +32,10 @@ public:
     void linkLevelRect(SDL_Rect* lvlrect);
     void linkCameraRect(SDL_Rect* camrect);
     
+    SDL_Rect getColliderRect();
+    void setColliderFactor(double fac);
+    
+    
     //设定即将渲染的贴图资源位置
     void setCurClip(SDL_Rect clipRect);
     
@@ -47,6 +50,9 @@ private:
     SDL_Rect curClip;
     //渲染时使用的Rect
     SDL_Rect mBox;
+    //碰撞检测用Rect的生成系数
+    double collider_factor;
+    
 protected:
     //镜头范围
     SDL_Rect *camRect;

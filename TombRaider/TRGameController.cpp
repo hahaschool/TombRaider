@@ -34,6 +34,32 @@
  */
 
 
+#pragma mark - 初始化
+void TRGameController::initialize(){
+    //内部变量在这里都会被重置
+    mapPathArray.clear();
+    mapPathMap.clear();
+    gTextureKeyMap.clear();
+    gAnimatorKeyMap.clear();
+    mapTileTextureArray.clear();
+    enemyTextureArray.clear();
+    bulletTextureArray.clear();
+    heroTextureArray.clear();
+    defaultEnemyMap.clear();
+    defaultHeroMap.clear();
+    defaultHpMap.clear();
+}
+
+void TRGameController::clearStage(){
+    //仅清理和游戏活动有关的项目
+    gMapTileList.clear();
+    gEnemyList.clear();
+    gBulletList.clear();
+    gItemList.clear();
+}
+
+#pragma mark - 文件读入
+#pragma mark 读入及解析地图文件
 void TRGameController::loadMapFromFile(std::string path){
     std::ifstream ifs;
     ifs.open(path);
@@ -46,11 +72,6 @@ void TRGameController::loadMapFromFile(std::string path){
     gGrider->gridHeight = n;
     gGrider->gridWidth = m;
     gPathFinder->init(n, m, 10);
-    for(int i=0;i<=50;i++){
-        for(int j=0;j<=50;j++){
-            mapIs[i][j] = 0;
-        }
-    }
     for(int i = 0; i < n; i++){
         for(int j = 0; j < m; j++){
             char a;
@@ -58,54 +79,43 @@ void TRGameController::loadMapFromFile(std::string path){
             switch(a){
                 case '0':
                     gPathFinder->setMatrix(j, i, TRPathFinderMatrixObstacle);
-                    createMapTile("wall/iron", TRMapTileTypeGround, j*50, i*50, 50, 50);
+                    createMapTile("wall/iron", TRMapTileTypeWall, j*50, i*50, 50, 50);
                     break;
                 case 'o':
                     gPathFinder->setMatrix(j,i,TRPathFinderMatrixRoad);
                     createMapTile("wall/out",TRMapTileTypeTeleport,j*50,i*50,50,50);
-                    mapIs[i][j] = 5;
                     break;
                 case 'w':
                     gPathFinder->setMatrix(j,i,TRPathFinderMatrixObstacle);
-                    createMapTile("wall/shui", TRMapTileTypeGround, j*50, i*50, 50, 50);
-                    mapIs[i][j] = 2;
+                    createMapTile("wall/shui", TRMapTileTypeWall, j*50, i*50, 50, 50);
                     break;
                 case 't':
                     createMapTile("map/tree",TRMapTileTypeGround,j*50,i*50,50,50);
                     gPathFinder->setMatrix(j,i,TRPathFinderMatrixRoad);
-                    mapIs[i][j] = 1;
                     break;
                 case 'i':
-                    createMapTile("inside/iron",TRMapTileTypeGround, j*50, i*50, 50, 50);
+                    createMapTile("inside/iron",TRMapTileTypeWall, j*50, i*50, 50, 50);
                     break;
                 case '1':
                     gPathFinder->setMatrix(j, i, TRPathFinderMatrixRoad);
                     break;
                 case 'm':
                     createMapTile("mummy",TRMapTileTypeGround, j*50, i*50, 50, 50);
-                    //createMapTile("action/catch",TRMapTileTypeGround,j*50+35,i*50+35,15,15);
                     break;
                 case 'k':
-                    createMapTile("map/yaoshi",TRMapTileTypeGround, j*50, i*50, 35, 35);
-                    //createMapTile("action/catch",TRMapTileTypeGround,j*50+35,i*50+35,15,15);
-                    mapIs[i][j] = 3;
+                    createItem("item/key/gold", j*50, i*50, 40, 40);
                     break;
                 case '$':
-                    createMapTile("map/trousure",TRMapTileTypeGround, j*50, i*50, 40, 40);
-                    mapIs[i][j] = 3;
+                    createItem("item/treasure/gold", j*50, i*50, 40, 40);
                     break;
                 case 'r':
-                    createMapTile("map/bullets",TRMapTileTypeGround, j*50, i*50, 50, 50);
-                    mapIs[i][j] = 3;
+                    createItem("item/bullet/superpack", j*50, i*50, 50, 50);
                     break;
                 case '+':
-                    createMapTile("map/hp",TRMapTileTypeGround, j*50, i*50, 40, 40);
-                    mapIs[i][j] = 3;
+                    createItem("item/heal/medicpack", j*50, i*50, 50, 50);
                     break;
                 case 'l':
-                    createMapTile("map/ganlanzhi",TRMapTileTypeGround, j*50, i*50, 50, 50);
-                    //createMapTile("action/catch",TRMapTileTypeGround,j*50+35,i*50+35,15,15);
-                    mapIs[i][j] = 3;
+                    createItem("item/heal/herb", j*50, i*50, 50, 50);
                     break;
                 case 'b':
                     createMapTile("map/brick",TRMapTileTypeGround, j*50, i*50, 50, 50);
@@ -121,233 +131,22 @@ void TRGameController::loadMapFromFile(std::string path){
     }
 }
 
-
-void TRGameController::gameOver(){
-    flgGameStarted = false;
-    flgGamePaused = false;
-}
-
-void TRGameController::handleEvent(SDL_Event &e){
-    while (SDL_PollEvent(&e)) {
-        if(e.type == SDL_QUIT){
-            gameOver();
-        }else if (e.type == SDL_KEYDOWN ) {
-            switch (e.key.keysym.sym) {
-                case SDLK_UP:case SDLK_w:
-                    if(e.key.repeat == 0){
-                        keyCnt++;
-                    }
-                    hero -> startMoveUp();
-                    break;
-                case SDLK_DOWN:case SDLK_s:
-                    if(e.key.repeat == 0){
-                        keyCnt++;
-                    }
-                    hero -> startMoveDown();
-                    break;
-                case SDLK_LEFT:case SDLK_a:
-                    if(e.key.repeat == 0){
-                        keyCnt++;
-                    }
-                    hero -> startMoveLeft();
-                    break;
-                case SDLK_RIGHT:case SDLK_d:
-                    if(e.key.repeat == 0){
-                        keyCnt++;
-                    }
-                    hero -> startMoveRight();
-                    break;
-                case SDLK_z:
-                    flgAttackPerformed = hero -> performAttack();
-                    gBgm->playMusic("Resources/Bgm/hero_battle.wav",true);
-                case SDLK_x:
-                    lastFire = hero -> fire();
-                    flgFired = lastFire != NULL;
-                    break;
-                case SDLK_c:
-                    if(mapTileBeCatched){
-                        gBgm->playMusic("Resources/Bgm/getSomething.wav",true);
-                        gPathFinder->setMatrix(someThingJ, someThingI, TRPathFinderMatrixRoad);
-                        //gMapTile->setObjectBeCatched(someThingJ,someThingI,TRPathFinderMatrixRoad);
-                        mapTileBeCatched = false;
-                    }
-                default:
-                    break;
-            }
-        }else if(e.type == SDL_KEYUP && e.key.repeat == 0){
-            switch (e.key.keysym.sym) {
-                case SDLK_UP:
-                case SDLK_DOWN:
-                case SDLK_LEFT:
-                case SDLK_RIGHT:
-                    if(e.key.repeat == 0){
-                        keyCnt--;
-                    }
-                    if (keyCnt == 0) {
-                        hero -> endMoving();
-                    }
-                    break;
-                default:
-                    break;
-            }
-        }
-    }
-}
-
-void TRGameController::runFrame(){
-    if (isGamePausing()) {
-        //Do something about pause
-        return;
-    }
-    if(!isGameRunning()){
-        return;
-    }
-    
-    //Calculate moving
-    for(std::list<TREnemy*>::iterator it = gEnemyList.begin(); it != gEnemyList.end(); it++){
-        (*it) -> move();
-        for(std::list<TRMapTile*>::iterator itt = gMapTileList.begin();itt != gMapTileList.end();itt++){
-            if(checkCollision((*it)->getBoxRect(), (*itt)->getBoxRect())){
-                (*it) -> undo();
-            }
-        }
-    }
-    hero -> move();
-    
-    for(std::list<TRMapTile*>::iterator itt = gMapTileList.begin();itt != gMapTileList.end();itt++){
-        if(checkCollision(hero->getBoxRect(), (*itt)->getBoxRect())) {
-            gBgm->playMusic("Resources/Bgm/碰到.wav",true);
-            hero -> undo();
-            int i = (*itt)->getBoxRect().y/50;
-            int j = (*itt)->getBoxRect().x/50;
-            if(mapIs[i][j] == 3)
-            {
-                createMapTile("action/catch",TRMapTileTypeGround,j*50+25,i*50+25,15,15);
-                mapTileBeCatched = true;
-                someThingJ = j;
-                someThingI = i;
-                cerr << "someThingJ: " << someThingJ << " someThingI:" << someThingI << endl;
-            }else if(mapIs[i][j] == 2)
-            {
-                
-            }else if(mapIs[i][j] == 1)
-            {
-                
-            }else if(mapIs[i][j] == 5)
-            {
-                nextMap();
-            }
-            
-        }
-    }
-    
-    //Refocus the camera
-    centerCameraByObject(hero);
-    
-    //Calculate Bullets
-    
-    //Calculate Attacks
-    if (flgAttackPerformed) {
-        for(std::list<TREnemy*>::iterator it = gEnemyList.begin(); it != gEnemyList.end(); it++){
-            if(checkCollision((*it)->getBoxRect(), hero->getBoxRect())){
-                hero -> attack((*it));
-            }
-        }
-        flgAttackPerformed = false;
-    }
-    
-    //Calculate Being Attacks
-    for(std::list<TREnemy*>::iterator it = gEnemyList.begin(); it != gEnemyList.end(); it++){
-        if (checkCollision(hero->getBoxRect(), (*it)->getBoxRect())) {
-            if(!(*it)->startAttacking()){
-                (*it)->attack(hero, (*it)->getDamage());
-            }
-        }
-    }
-    
-    //Delete dead Enemys
-    for(std::list<TREnemy*>::iterator it = gEnemyList.begin(); it != gEnemyList.end(); it++){
-        if(!(*it)->isAlive()){
-            gEnemyList.erase(it);
-            it--;
-        }
-    }
-    
-    //Calculate debuffs
-    
-    
-    //Render all
-    
-    for(std::list<TRMapTile*>::iterator it = gMapTileList.begin();it != gMapTileList.end();it++){
-        (*it) -> render();
-    }
-    for(std::list<TREnemy*>::iterator it = gEnemyList.begin(); it != gEnemyList.end(); it++){
-        (*it) -> render();
-    }
-    for(std::list<TRBullet*>::iterator it = gBulletList.begin();it != gBulletList.end();it++){
-        (*it) -> render();
-    }
-    hero -> render();
-}
-
-
-TRGameController::TRGameController(){
-    gLevelBox = {0,0,1920,1080};
-    keyCnt = 0;
-}
-
-TRGameController::~TRGameController(){
-    free();
-}
-
-void TRGameController::free(){
-    for(std::list<TRMapTile*>::iterator it = gMapTileList.begin();it != gMapTileList.end();it++){
-        delete (*it);
-    }
-    for(std::list<TREnemy*>::iterator it = gEnemyList.begin(); it != gEnemyList.end(); it++){
-        delete (*it);
-    }
-    for(std::list<TRBullet*>::iterator it = gBulletList.begin();it != gBulletList.end();it++){
-        delete (*it);
-    }
-    for(int i = 0; i < mapTileTextureArray.size(); i++){
-        delete mapTileTextureArray[i];
-    }
-    for(int i = 0; i < enemyTextureArray.size(); i++){
-        delete enemyTextureArray[i];
-    }
-    for(int i = 0; i < bulletTextureArray.size(); i++){
-        delete bulletTextureArray[i];
-    }
-    for(int i = 0; i < heroTextureArray.size(); i++){
-        delete heroTextureArray[i];
-    }
-    for(int i = 0; i < animatorArray.size(); i++){
-        delete animatorArray[i];
-    }
-    for(std::map<std::string,TREnemy *>::iterator it = defaultEnemyMap.begin(); it != defaultEnemyMap.end(); it++){
-        delete (*it).second;
-    }
-    for(std::map<std::string,TRHero *>::iterator it = defaultHeroMap.begin(); it != defaultHeroMap.end();it++){
-        delete (*it).second;
-    }
-}
-
+#pragma mark 读入全部资源文件
 void TRGameController::loadResources(){
-    //init
-    mapPathArray.clear();
-    mapPathMap.clear();
-    gTextureKeyMap.clear();
-    gAnimatorKeyMap.clear();
-    mapTileTextureArray.clear();
-    enemyTextureArray.clear();
-    bulletTextureArray.clear();
-    heroTextureArray.clear();
-    defaultEnemyMap.clear();
-    defaultHeroMap.clear();
-    defaultHpMap.clear();
-    
-    //载入地图贴图
+    loadTexture();
+    loadDefault();
+}
+
+#pragma mark 读入材质文件 总方法
+void TRGameController::loadTexture(){
+    loadTextureMaptile();
+    loadTextureEnemy();
+    loadTextureHero();
+    loadTextureBullet();
+}
+
+#pragma mark 读入地图块材质
+void TRGameController::loadTextureMaptile(){
     std::ifstream ifs("Resources/Config/Texture_Maptile.cfg");
     while (ifs.peek() == '/') {
         std::string filter;
@@ -367,8 +166,12 @@ void TRGameController::loadResources(){
         gTextureKeyMap[name] = tex;
     }
     ifs.close();
-    //载入怪物贴图
-    ifs.open("Resources/Config/Texture_Enemy.cfg");
+}
+
+#pragma mark 读入敌人材质
+void TRGameController::loadTextureEnemy(){
+    std::ifstream ifs("Resources/Config/Texture_Enemy.cfg");
+    int n;
     while (ifs.peek() == '/') {
         std::string filter;
         std::getline(ifs,filter);
@@ -386,8 +189,12 @@ void TRGameController::loadResources(){
         gTextureKeyMap[name] = tex;
     }
     ifs.close();
-    //载入英雄贴图
-    ifs.open("Resources/Config/Texture_Hero.cfg");
+}
+
+#pragma mark 读入英雄材质
+void TRGameController::loadTextureHero(){
+    std::ifstream ifs("Resources/Config/Texture_Hero.cfg");
+    int n;
     while (ifs.peek() == '/') {
         std::string filter;
         std::getline(ifs,filter);
@@ -405,8 +212,12 @@ void TRGameController::loadResources(){
         gTextureKeyMap[name] = tex;
     }
     ifs.close();
-    //载入子弹贴图
-    ifs.open("Resources/Config/Texture_Bullet.cfg");
+}
+
+#pragma mark 读入子弹材质
+void TRGameController::loadTextureBullet(){
+    std::ifstream ifs("Resources/Config/Texture_Bullet.cfg");
+    int n;
     while (ifs.peek() == '/') {
         std::string filter;
         std::getline(ifs,filter);
@@ -424,8 +235,21 @@ void TRGameController::loadResources(){
         gTextureKeyMap[name] = tex;
     }
     ifs.close();
-    //载入Animator
-    ifs.open("Resources/Config/Animator.cfg");
+}
+
+#pragma mark 读入默认值 总方法
+void TRGameController::loadDefault(){
+    loadDefaultAnimator();
+    loadDefaultEnemy();
+    loadDefaultHero();
+    loadDefaultMaplist();
+    loadDefaultItem();
+}
+
+#pragma mark 读入动画器默认值
+void TRGameController::loadDefaultAnimator(){
+    std::ifstream ifs("Resources/Config/Animator.cfg");
+    int n;
     while (ifs.peek() == '/') {
         std::string filter;
         std::getline(ifs,filter);
@@ -448,8 +272,12 @@ void TRGameController::loadResources(){
         animatorArray[id] = ani;
     }
     ifs.close();
-    //载入Enemy
-    ifs.open("Resources/Config/Enemy.cfg");
+}
+
+#pragma mark 读入敌人默认值
+void TRGameController::loadDefaultEnemy(){
+    std::ifstream ifs("Resources/Config/Enemy.cfg");
+    int n;
     while (ifs.peek() == '/') {
         std::string filter;
         std::getline(ifs,filter);
@@ -511,8 +339,12 @@ void TRGameController::loadResources(){
         }
     }
     ifs.close();
-    //载入Hero
-    ifs.open("Resources/Config/Hero.cfg");
+}
+
+#pragma mark 读入英雄默认值
+void TRGameController::loadDefaultHero(){
+    std::ifstream ifs("Resources/Config/Hero.cfg");
+    int n;
     while (ifs.peek() == '/') {
         std::string filter;
         std::getline(ifs,filter);
@@ -536,6 +368,7 @@ void TRGameController::loadResources(){
         ho -> setArmour(arm);
         ho -> setBulletDamage(bdmg);
         ho -> setBulletSpeed(bvl);
+        ho -> setAttackRangeFactor(0.8);
         ifs >> name;
         ho -> linkTexture(gTextureKeyMap[name]);
         for(int j = 0; j < 4; j++){
@@ -591,8 +424,12 @@ void TRGameController::loadResources(){
         }
     }
     ifs.close();
-    //载入地图列表
-    ifs.open("Resources/Config/Map.cfg");
+}
+
+#pragma mark 读入地图列表
+void TRGameController::loadDefaultMaplist(){
+    std::ifstream ifs("Resources/Config/Map.cfg");
+    int n;
     while (ifs.peek() == '/') {
         std::string filter;
         std::getline(ifs,filter);
@@ -606,28 +443,254 @@ void TRGameController::loadResources(){
         mapPathMap[name] = path;
         mapPathArray[id] = path;
     }
-    
-    //载入血条贴图
-    ifs.open("Resources/Config/Equip.cfg");
+    ifs.close();
+}
+
+#pragma mark 读入道具默认值
+void TRGameController::loadDefaultItem(){
+    std::ifstream ifs("Resources/Config/Item.cfg");
+    int n;
     while (ifs.peek() == '/') {
         std::string filter;
-        std::getline(ifs,filter);
+        std::getline(ifs, filter);
     }
     ifs >> n;
-    equipTextureArray.resize(n+1);
     for(int i = 1; i <= n; i++){
-        int id;
-        std::string name,path;
-        TRTexture *tex = new TRTexture;
-        tex -> linkRenderer(gRenderer);
-        ifs >> id >> name >> path;
-        tex -> loadFromFile(path);
-        equipTextureArray[id] = tex;
-        gTextureKeyMap[name] = tex;
+        int id,ww,hh;
+        std::string name,tname,type;
+        ifs >> id >> name >> tname >> ww >> hh >> type;
+        TRItem *ndt = new TRItem;
+        ndt -> linkTexture(gTextureKeyMap[tname]);
+        ndt -> linkLevelRect(&gLevelBox);
+        ndt -> linkCameraRect(&gCameraBox);
+        ndt -> setWidth(ww);
+        ndt -> setHeight(hh);
+        ndt -> marker_texture = gTextureKeyMap["action/catch"];
+        ndt -> setCurClip({0,0,ww,hh});
+        ndt -> setType(TRMapTileTypeGround);
+        ndt -> linkCameraRect(&gCameraBox);
+        ndt -> linkLevelRect(&gLevelBox);
+        if(type == "HEAL"){
+            ndt -> setItemType(TRItemHeal);
+            int delta;
+            ifs >> delta;
+            ndt -> setHealingValue(delta);
+        }else if(type == "BULLET"){
+            ndt -> setItemType(TRItemBullet);
+            int delta;
+            ifs >> delta;
+            ndt -> setBulletValue(delta);
+        }else if(type == "KEY"){
+            ndt -> setItemType(TRItemKey);
+        }else if(type == "TREASURE"){
+            ndt -> setItemType(TRItemTreasure);
+        }
+        defaultItemMap[name] = ndt;
     }
     ifs.close();
 }
 
+void TRGameController::gameOver(){
+    flgGameStarted = false;
+    flgGamePaused = false;
+}
+
+void TRGameController::handleEvent(SDL_Event &e){
+    while (SDL_PollEvent(&e)) {
+        if(e.type == SDL_QUIT){
+            gameOver();
+        }else if (e.type == SDL_KEYDOWN ) {
+            switch (e.key.keysym.sym) {
+                case SDLK_UP:case SDLK_w:
+                    if(e.key.repeat == 0){
+                        keyCnt++;
+                    }
+                    hero -> startMoveUp();
+                    break;
+                case SDLK_DOWN:case SDLK_s:
+                    if(e.key.repeat == 0){
+                        keyCnt++;
+                    }
+                    hero -> startMoveDown();
+                    break;
+                case SDLK_LEFT:case SDLK_a:
+                    if(e.key.repeat == 0){
+                        keyCnt++;
+                    }
+                    hero -> startMoveLeft();
+                    break;
+                case SDLK_RIGHT:case SDLK_d:
+                    if(e.key.repeat == 0){
+                        keyCnt++;
+                    }
+                    hero -> startMoveRight();
+                    break;
+                case SDLK_z:
+                    flgAttackPerformed = hero -> performAttack();
+                    gBgm->playMusic("Resources/Bgm/hero_battle.wav",true);
+                case SDLK_x:
+                    lastFire = hero -> fire();
+                    flgFired = lastFire != NULL;
+                    break;
+                case SDLK_c:
+                    willPickupItem = true;
+                default:
+                    break;
+            }
+        }else if(e.type == SDL_KEYUP && e.key.repeat == 0){
+            switch (e.key.keysym.sym) {
+                case SDLK_UP:
+                case SDLK_DOWN:
+                case SDLK_LEFT:
+                case SDLK_RIGHT:
+                    if(e.key.repeat == 0){
+                        keyCnt--;
+                    }
+                    if (keyCnt == 0) {
+                        hero -> endMoving();
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+}
+
+#pragma mark 执行每画幅需要的运算
+void TRGameController::runFrame(){
+    if (isGamePausing()) {
+        //Do something about pause
+        return;
+    }
+    if(!isGameRunning()){
+        return;
+    }
+    
+    //Calculate enemy's moving
+    for(std::list<TREnemy*>::iterator it = gEnemyList.begin(); it != gEnemyList.end(); it++){
+        (*it) -> move();
+        for(std::list<TRMapTile*>::iterator itt = gMapTileList.begin();itt != gMapTileList.end();itt++){
+            if(!((*itt)->isPassBy()) && checkCollision((*it)->getBoxRect(), (*itt)->getBoxRect())){
+                (*it) -> undo();
+            }
+        }
+    }
+    //Calculate Hero's moving
+    hero -> move();
+    for(std::list<TRMapTile*>::iterator itt = gMapTileList.begin();itt != gMapTileList.end();itt++){
+        if(!((*itt)->isPassBy()) && checkCollision(hero->getBoxRect(), (*itt)->getColliderRect())) {
+            hero -> undo();
+            break;
+        }
+    }
+    
+    //Calculate Hero's Contact w/ Items
+    if (willPickupItem) {
+        for(std::list<TRItem*>::iterator it = gItemList.begin();it != gItemList.end();it++){
+            if (checkCollision((*it) -> getBoxRect(), hero -> getAttackRect())) {
+                (*it) -> activate();
+                gItemList.erase(it);
+                break;
+            }
+        }
+    }willPickupItem = false;
+    
+    
+    //Refocus the camera
+    centerCameraByObject(hero);
+    
+    //Calculate Bullets
+    
+    //Calculate Attacks
+    if (flgAttackPerformed) {
+        for(std::list<TREnemy*>::iterator it = gEnemyList.begin(); it != gEnemyList.end(); it++){
+            if(checkCollision((*it)->getBoxRect(), hero->getAttackRect())){
+                hero -> attack((*it));
+            }
+        }
+        flgAttackPerformed = false;
+    }
+    
+    //Calculate Being Attacks
+    for(std::list<TREnemy*>::iterator it = gEnemyList.begin(); it != gEnemyList.end(); it++){
+        if (checkCollision(hero->getBoxRect(), (*it)->getBoxRect())) {
+            if(!(*it)->startAttacking()){
+                (*it)->attack(hero, (*it)->getDamage());
+            }
+        }
+    }
+    
+    //Delete dead Enemys
+    for(std::list<TREnemy*>::iterator it = gEnemyList.begin(); it != gEnemyList.end(); it++){
+        if(!(*it)->isAlive()){
+            gEnemyList.erase(it);
+            it--;
+        }
+    }
+    
+    //Calculate debuffs
+    
+    
+    //Render all
+    
+    for(std::list<TRMapTile*>::iterator it = gMapTileList.begin();it != gMapTileList.end();it++){
+        (*it) -> render();
+    }
+    for(std::list<TREnemy*>::iterator it = gEnemyList.begin(); it != gEnemyList.end(); it++){
+        (*it) -> render();
+    }
+    for(std::list<TRBullet*>::iterator it = gBulletList.begin();it != gBulletList.end();it++){
+        (*it) -> render();
+    }
+    for(std::list<TRItem*>::iterator it = gItemList.begin();it != gItemList.end();it++){
+        (*it) -> render();
+    }
+    hero -> render();
+}
+
+
+TRGameController::TRGameController(){
+    gLevelBox = {0,0,1920,1080};
+    keyCnt = 0;
+}
+
+TRGameController::~TRGameController(){
+    free();
+}
+
+void TRGameController::free(){
+    for(std::list<TRMapTile*>::iterator it = gMapTileList.begin();it != gMapTileList.end();it++){
+        delete (*it);
+    }
+    for(std::list<TREnemy*>::iterator it = gEnemyList.begin(); it != gEnemyList.end(); it++){
+        delete (*it);
+    }
+    for(std::list<TRBullet*>::iterator it = gBulletList.begin();it != gBulletList.end();it++){
+        delete (*it);
+    }
+    for(int i = 0; i < mapTileTextureArray.size(); i++){
+        delete mapTileTextureArray[i];
+    }
+    for(int i = 0; i < enemyTextureArray.size(); i++){
+        delete enemyTextureArray[i];
+    }
+    for(int i = 0; i < bulletTextureArray.size(); i++){
+        delete bulletTextureArray[i];
+    }
+    for(int i = 0; i < heroTextureArray.size(); i++){
+        delete heroTextureArray[i];
+    }
+    for(int i = 0; i < animatorArray.size(); i++){
+        delete animatorArray[i];
+    }
+    for(std::map<std::string,TREnemy *>::iterator it = defaultEnemyMap.begin(); it != defaultEnemyMap.end(); it++){
+        delete (*it).second;
+    }
+    for(std::map<std::string,TRHero *>::iterator it = defaultHeroMap.begin(); it != defaultHeroMap.end();it++){
+        delete (*it).second;
+    }
+}
 
 
 void TRGameController::centerCameraByObject(TRObject *obj){
@@ -651,6 +714,8 @@ void TRGameController::linkRenderer(SDL_Renderer *renderer){
     gRenderer = renderer;
 }
 
+#pragma mark - 创建游戏部件
+#pragma mark 创建地图要素
 void TRGameController::createMapTile(std::string textureKey,TRMapTileType type,int x,int y,int h,int w){
     TRMapTile *tile = new TRMapTile;
     tile -> setX(x);
@@ -658,12 +723,14 @@ void TRGameController::createMapTile(std::string textureKey,TRMapTileType type,i
     tile -> setWidth(w);
     tile -> setHeight(h);
     tile -> setCurClip({0,0,w,h});
+    tile -> setType(type);
+    tile -> setColliderFactor(0.7);
     tile -> linkCameraRect(&gCameraBox);
     tile -> linkLevelRect(&gLevelBox);
     tile -> linkTexture(gTextureKeyMap[textureKey]);
     gMapTileList.insert(gMapTileList.end(), tile);
 }
-
+#pragma mark 创建敌人
 void TRGameController::createEnemy(std::string defaultKey,int x,int y,int h,int w){
     TREnemy *ce = new TREnemy;
     *ce = *defaultEnemyMap[defaultKey];
@@ -675,7 +742,7 @@ void TRGameController::createEnemy(std::string defaultKey,int x,int y,int h,int 
     ce -> startMoving();
     gEnemyList.insert(gEnemyList.end(), ce);
 }
-
+#pragma mark 创建英雄
 void TRGameController::createHero(std::string defaultKey,int x,int y,int h,int w){
     TRHero *hr = new TRHero;
     *hr = *defaultHeroMap[defaultKey];
@@ -685,6 +752,17 @@ void TRGameController::createHero(std::string defaultKey,int x,int y,int h,int w
     hr -> setWidth(w);
     this -> createHp("bloodBar",x,y,h-5,w);
     hero = hr;
+}
+#pragma mark 创建道具
+void TRGameController::createItem(std::string defaultKey, int x, int y, int h, int w){
+    TRItem *ci = new TRItem;
+    *ci = *defaultItemMap[defaultKey];
+    ci -> setX(x);
+    ci -> setY(y);
+    ci -> setHeight(h);
+    ci -> setWidth(w);
+    ci -> linkHero(hero);
+    gItemList.insert(gItemList.end(), ci);
 }
 
 void TRGameController::createHp(std::string defaultKey,int x,int y,int h,int w){
@@ -727,20 +805,6 @@ bool TRGameController::isGameRunning(){
 }
 
 bool TRGameController::checkCollision(SDL_Rect a, SDL_Rect b){
-    /*if(a.y == hero->getBoxRect().y && a.x == hero->getBoxRect().x && gPathFinder->mat[b.y][b.x] == 1){
-     return false;
-     }*/
-    //The sides of the rectangles
-    if(mapIs[b.y/50][b.x/50] == 1)
-    {
-        return false;
-    }
-    if(mapIs[b.y/50][b.x/50] == 2)
-    {
-        //hero->setVelocity(3);
-        return false;
-    }
-    
     int leftA, leftB;
     int rightA, rightB;
     int topA, topB;

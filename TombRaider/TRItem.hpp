@@ -24,6 +24,10 @@ enum TRItemType{
 };
 
 struct TRItem : public TRMapTile{
+    TRItem(){
+        setType(TRMapTileTypeGround);
+        setPassBy(true);
+    }
     void activate(){
         switch (type) {
             case TRItemBullet:
@@ -52,12 +56,15 @@ struct TRItem : public TRMapTile{
     }
     
     void render(){
-        if (mht() < MKRRANGE) {
-            marker_texture -> render(getX() + 25, getY() + 25);
-        }
         TRObject::render();
+        if (mht() < MKRRANGE) {
+            marker_texture -> render(getX() - camRect->x + 25, getY() - camRect->y + 25);
+        }
     }
     
+    void setItemType(TRItemType typ){
+        type = typ;
+    }
 
     TRHero *hero;
     TRItemType type;
@@ -68,11 +75,17 @@ struct TRItem : public TRMapTile{
     void heal(){
         hero->heal(healval);
     }
+    void setHealingValue(int det){
+        healval = det;
+    }
     
     //子弹道具相关
     int bulletval;
     void addbullet(){
         
+    }
+    void setBulletValue(int det){
+        bulletval = det;
     }
     
     //钥匙相关
@@ -82,7 +95,7 @@ struct TRItem : public TRMapTile{
     
     
     
-    static const int MKRRANGE = 2;
+    static const int MKRRANGE = 60;
     int mht(){
         return abs(hero->getX() - this->getX()) + abs(hero->getY() - this->getY());
     }

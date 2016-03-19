@@ -453,6 +453,30 @@ bool TRHero::isFiringAnimated(){
     return firingAnimated;
 }
 
+#pragma mark - 攻击范围
+#pragma mark 设定攻击范围扩张系数
+void TRHero::setAttackRangeFactor(double atkf){
+    atkFactor = atkf;
+}
+#pragma mark 得到攻击范围
+SDL_Rect TRHero::getAttackRect(){
+    SDL_Rect ret = getBoxRect();
+    if (getDirection() == TRDirectionUp) {
+        ret.y -= getHeight()*atkFactor;
+        ret.h += getHeight()*atkFactor;
+    }else if(getDirection() == TRDirectionLeft){
+        ret.w += getWidth()*atkFactor;
+    }else if(getDirection() == TRDirectionDown){
+        ret.h += getHeight()*atkFactor;
+    }else if(getDirection() == TRDirectionRight){
+        ret.x -= getWidth()*atkFactor;
+        ret.w += getWidth()*atkFactor;
+    }
+    return ret;
+}
+
+
+
 #pragma mark - Animator Lockdown (PRIVATE)
 void TRHero::lock(int interval){
     freeze();

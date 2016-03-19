@@ -28,70 +28,93 @@
 
 class TRGameController{
 public:
+#pragma mark - 对象生命周期
     //构造器和销毁器
     TRGameController();
     ~TRGameController();
     void free();
+#pragma mark - 初始化／清除
+    //全局初始化
+    void initialize();
+    //清空游戏舞台
+    void clearStage();
     
-    //载入资源
+#pragma mark - 文件读入
+    //读入全部资源
     void loadResources();
-    
+    //读入材质文件 总方法
+    void loadTexture();
+    //读入地图块材质
+    void loadTextureMaptile();
+    //读入敌人材质
+    void loadTextureEnemy();
+    //读入英雄材质
+    void loadTextureHero();
+    //读入子弹材质
+    void loadTextureBullet();
+    //读入默认值 总方法
+    void loadDefault();
+    //读入动画器默认值
+    void loadDefaultAnimator();
+    //读入敌人默认值
+    void loadDefaultEnemy();
+    //读入英雄默认值
+    void loadDefaultHero();
+    //读入地图列表
+    void loadDefaultMaplist();
+    //读入道具默认值
+    void loadDefaultItem();
     //载入地图
     void loadMapFromFile(std::string path);
     
-    //清除关卡
-    void clearStage();
-    
-    //处理键盘事件
-    void handleEvent(SDL_Event &e);
-    
-    //调整镜头
-    void centerCameraByObject(TRObject *obj);
-    
+#pragma mark - 对象参数设定
+    //设定视野大笑
+    void setCamera(int h,int w);
+    //链接坐标转换器
+    void linkGrider(TRGrider *grid);
+    //链接寻路器
+    void linkPathfinder(TRPathFinder *pf);
     //连接渲染器
     void linkRenderer(SDL_Renderer *renderer);
-    
-    //创建地图块
-    void createMapTile(std::string textureKey,TRMapTileType type,int x,int y,int h,int w);
-    
-    //创建敌人
-    void createEnemy(std::string defaultKey,int x,int y,int h,int w);
-    
-    //创建英雄
-    void createHero(std::string defaultKey,int x,int y,int h,int w);
-    
+#pragma mark - 游戏生命周期
     //游戏开始
     void startGame();
+    //判断游戏是否正在运行
     bool isGameRunning();
-    
     //游戏暂停
     void pauseGame();
     void resumeGame();
     bool isGamePausing();
-    
     //游戏结束
     void gameOver();
-    
+    //处理键盘事件
+    void handleEvent(SDL_Event &e);
     //每帧的运算
     void runFrame();
     void render();
+#pragma mark - 创建游戏部件
+    //创建地图块
+    void createMapTile(std::string textureKey,TRMapTileType type,int x,int y,int h,int w);
+    //创建敌人
+    void createEnemy(std::string defaultKey,int x,int y,int h,int w);
+    //创建英雄
+    void createHero(std::string defaultKey,int x,int y,int h,int w);
+    //创建道具
+    void createItem(std::string defaultKey,int x,int y,int h,int w);
+    //创建血条
+    void createHp(std::string defaultKey,int x,int y,int h,int w);
     
-    //设定屏幕参数
-    void setCamera(int h,int w);
-    
-    //Grider and PathFinder
-    void linkGrider(TRGrider *grid);
-    void linkPathfinder(TRPathFinder *pf);
+#pragma mark - 游戏进程控制
+    //下一关
+    void nextMap();
+private:
+    //调整镜头
+    void centerCameraByObject(TRObject *obj);
     
     //基本碰撞检测
     bool checkCollision(SDL_Rect a,SDL_Rect b);
     
-    //下一关
-    void nextMap();
     
-    
-    void createHp(std::string defaultKey,int x,int y,int h,int w);
-private:
     bool flgAttackPerformed;
     bool flgFired;
     TRBullet *lastFire;
@@ -121,16 +144,18 @@ private:
     std::vector<TRAnimator*> animatorArray;
     std::map<std::string,TRAnimator*> gAnimatorKeyMap;
     
-    //TREnemy Hero预置
+    //TREnemy Hero Item预置
     std::map<std::string,TREnemy *> defaultEnemyMap;
     std::map<std::string,TRHero *> defaultHeroMap;
+    std::map<std::string,TRItem *> defaultItemMap;
+    
+    
     
     std::map<std::string,TRhp *>defaultHpMap;
     
     //全局Grider和寻路器
     TRGrider *gGrider;
     TRPathFinder *gPathFinder;
-    TRGameController *gGameController;
     TRBgm *gBgm;
     TRhp *heroHp;
     
@@ -149,6 +174,10 @@ private:
     //道具列表
     std::list<TRItem*> gItemList;
     
+    
+    //即将捡起物品标识
+    bool willPickupItem;
+    
     //英雄单位
     TRHero *hero;
     
@@ -157,11 +186,6 @@ private:
     //全局地图大小
     SDL_Rect gLevelBox;
     
-    int mapIs[51][51];
-    TRMapTile *gMapTile;
-    bool mapTileBeCatched;
-    int someThingJ;
-    int someThingI;
 };
 
 #endif /* TRGameController_hpp */

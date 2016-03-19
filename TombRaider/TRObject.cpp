@@ -69,3 +69,16 @@ void TRObject::render(){
 void TRObject::linkTexture(TRTexture *texture){
     mTexture = texture;
 }
+
+void TRObject::setColliderFactor(double fac){
+    collider_factor = fac;
+}
+
+SDL_Rect TRObject::getColliderRect(){
+    SDL_Rect ret;
+    ret.x = getX() + (1.0-collider_factor)*getWidth()/2;
+    ret.y = getY() + (1.0-collider_factor)*getHeight()/2;
+    ret.w = getWidth() * collider_factor;
+    ret.h = getHeight() * collider_factor;
+    return ret;
+}
