@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		E05CCB5C1C9B1D6100A66883 /* TRItem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E05CCB5A1C9B1D6100A66883 /* TRItem.cpp */; };
 		E0969EAB1C6CEC2000932AA0 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E0969EAA1C6CEC2000932AA0 /* main.cpp */; };
 		E0969EB31C6D9B9200932AA0 /* TRTexture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E0969EB11C6D9B9200932AA0 /* TRTexture.cpp */; };
 		E0969EB61C6D9BB000932AA0 /* TRObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E0969EB41C6D9BB000932AA0 /* TRObject.cpp */; };
@@ -21,6 +22,9 @@
 		E0969ECE1C6E48AD00932AA0 /* TRSprite.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E0969ECC1C6E48AD00932AA0 /* TRSprite.cpp */; };
 		E0969ED11C6E4CD600932AA0 /* TRGameController.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E0969ECF1C6E4CD600932AA0 /* TRGameController.cpp */; };
 		E0B68DD01C71C7A6004DB5E7 /* TRBullet.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E0B68DCE1C71C7A6004DB5E7 /* TRBullet.cpp */; };
+		E0F0A75F1C99A6C7003ECDA5 /* TRBgm.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E0F0A75D1C99A6C7003ECDA5 /* TRBgm.cpp */; };
+		E0F0A7621C99A965003ECDA5 /* SDL2_mixer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E0F0A7611C99A965003ECDA5 /* SDL2_mixer.framework */; };
+		E0F0A7651C99A992003ECDA5 /* TRhp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E0F0A7631C99A992003ECDA5 /* TRhp.cpp */; };
 		E0F931F41C7083F4006ED7E3 /* TRPathFinder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E0F931F21C7083F4006ED7E3 /* TRPathFinder.cpp */; };
 		E0F931F71C70BFC6006ED7E3 /* TRGrider.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E0F931F51C70BFC6006ED7E3 /* TRGrider.cpp */; };
 /* End PBXBuildFile section */
@@ -38,6 +42,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		E05CCB5A1C9B1D6100A66883 /* TRItem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TRItem.cpp; sourceTree = "<group>"; };
+		E05CCB5B1C9B1D6100A66883 /* TRItem.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = TRItem.hpp; sourceTree = "<group>"; };
 		E0969EA71C6CEC2000932AA0 /* TombRaider */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = TombRaider; sourceTree = BUILT_PRODUCTS_DIR; };
 		E0969EAA1C6CEC2000932AA0 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		E0969EB11C6D9B9200932AA0 /* TRTexture.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TRTexture.cpp; sourceTree = "<group>"; };
@@ -63,7 +69,12 @@
 		E0969ED01C6E4CD600932AA0 /* TRGameController.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = TRGameController.hpp; sourceTree = "<group>"; };
 		E0B68DCE1C71C7A6004DB5E7 /* TRBullet.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TRBullet.cpp; sourceTree = "<group>"; };
 		E0B68DCF1C71C7A6004DB5E7 /* TRBullet.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = TRBullet.hpp; sourceTree = "<group>"; };
-		E0B68DD31C74CB18004DB5E7 /* Resources */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Resources; sourceTree = "<group>"; };
+		E0F0A75D1C99A6C7003ECDA5 /* TRBgm.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TRBgm.cpp; sourceTree = "<group>"; };
+		E0F0A75E1C99A6C7003ECDA5 /* TRBgm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TRBgm.h; sourceTree = "<group>"; };
+		E0F0A7601C99A8EC003ECDA5 /* Resources */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Resources; sourceTree = "<group>"; };
+		E0F0A7611C99A965003ECDA5 /* SDL2_mixer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2_mixer.framework; path = ../../../../Library/Frameworks/SDL2_mixer.framework; sourceTree = "<group>"; };
+		E0F0A7631C99A992003ECDA5 /* TRhp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TRhp.cpp; sourceTree = "<group>"; };
+		E0F0A7641C99A992003ECDA5 /* TRhp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TRhp.h; sourceTree = "<group>"; };
 		E0F931F21C7083F4006ED7E3 /* TRPathFinder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TRPathFinder.cpp; sourceTree = "<group>"; };
 		E0F931F31C7083F4006ED7E3 /* TRPathFinder.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = TRPathFinder.hpp; sourceTree = "<group>"; };
 		E0F931F51C70BFC6006ED7E3 /* TRGrider.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TRGrider.cpp; sourceTree = "<group>"; };
@@ -75,6 +86,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E0F0A7621C99A965003ECDA5 /* SDL2_mixer.framework in Frameworks */,
 				E0969EBC1C6D9CF500932AA0 /* SDL2_ttf.framework in Frameworks */,
 				E0969EBA1C6D9C2400932AA0 /* SDL2_image.framework in Frameworks */,
 				E0969EB81C6D9C0E00932AA0 /* SDL2.framework in Frameworks */,
@@ -87,7 +99,8 @@
 		E0969E9E1C6CEC2000932AA0 = {
 			isa = PBXGroup;
 			children = (
-				E0B68DD31C74CB18004DB5E7 /* Resources */,
+				E0F0A7611C99A965003ECDA5 /* SDL2_mixer.framework */,
+				E0F0A7601C99A8EC003ECDA5 /* Resources */,
 				E0969EBB1C6D9CF500932AA0 /* SDL2_ttf.framework */,
 				E0969EB91C6D9C2400932AA0 /* SDL2_image.framework */,
 				E0969EB71C6D9C0E00932AA0 /* SDL2.framework */,
@@ -108,10 +121,16 @@
 			isa = PBXGroup;
 			children = (
 				E0969EAA1C6CEC2000932AA0 /* main.cpp */,
+				E0F0A7631C99A992003ECDA5 /* TRhp.cpp */,
+				E0F0A7641C99A992003ECDA5 /* TRhp.h */,
+				E0F0A75D1C99A6C7003ECDA5 /* TRBgm.cpp */,
+				E0F0A75E1C99A6C7003ECDA5 /* TRBgm.h */,
 				E0F931F51C70BFC6006ED7E3 /* TRGrider.cpp */,
 				E0F931F61C70BFC6006ED7E3 /* TRGrider.hpp */,
 				E0F931F21C7083F4006ED7E3 /* TRPathFinder.cpp */,
 				E0F931F31C7083F4006ED7E3 /* TRPathFinder.hpp */,
+				E05CCB5A1C9B1D6100A66883 /* TRItem.cpp */,
+				E05CCB5B1C9B1D6100A66883 /* TRItem.hpp */,
 				E0969ECF1C6E4CD600932AA0 /* TRGameController.cpp */,
 				E0969ED01C6E4CD600932AA0 /* TRGameController.hpp */,
 				E0969EB11C6D9B9200932AA0 /* TRTexture.cpp */,
@@ -192,14 +211,17 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E05CCB5C1C9B1D6100A66883 /* TRItem.cpp in Sources */,
 				E0969ECB1C6E484800932AA0 /* TREnemy.cpp in Sources */,
 				E0969EB61C6D9BB000932AA0 /* TRObject.cpp in Sources */,
 				E0B68DD01C71C7A6004DB5E7 /* TRBullet.cpp in Sources */,
 				E0969EC51C6E390000932AA0 /* TRHero.cpp in Sources */,
+				E0F0A75F1C99A6C7003ECDA5 /* TRBgm.cpp in Sources */,
 				E0969ECE1C6E48AD00932AA0 /* TRSprite.cpp in Sources */,
 				E0F931F71C70BFC6006ED7E3 /* TRGrider.cpp in Sources */,
 				E0F931F41C7083F4006ED7E3 /* TRPathFinder.cpp in Sources */,
 				E0969EAB1C6CEC2000932AA0 /* main.cpp in Sources */,
+				E0F0A7651C99A992003ECDA5 /* TRhp.cpp in Sources */,
 				E0969EC21C6E1E7B00932AA0 /* TRAnimator.cpp in Sources */,
 				E0969EC81C6E42DA00932AA0 /* TRMapTile.cpp in Sources */,
 				E0969ED11C6E4CD600932AA0 /* TRGameController.cpp in Sources */,

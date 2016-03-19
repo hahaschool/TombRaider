@@ -30,6 +30,8 @@
 //
 
 TRAnimator::TRAnimator(){
+    flgEnd = false;
+    flgLoop = true;
     frameCnt = 0;
     seq.clear();
     animationPeriod = 0;
