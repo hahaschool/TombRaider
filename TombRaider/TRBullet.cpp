@@ -8,6 +8,14 @@
 
 #include "TRBullet.hpp"
 
+#pragma mark - 构造器
+TRBullet::TRBullet(){
+    animated = false;
+    type = TRBulletFriendly;
+    used = false;
+    dmg = vel = 0;
+}
+
 #pragma mark - 属性
 int TRBullet::getSpeed(){
     return vel;
@@ -52,6 +60,29 @@ void TRBullet::setDirection(TRDirection ndir){
     }
 }
 
+#pragma mark - 动画
+#pragma mark 返回动画启用状态
+bool TRBullet::isAnimated(){
+    return animated;
+}
+#pragma mark 设定动画启用状态
+void TRBullet::setAnimated(bool aniflg){
+    animated = aniflg;
+}
+#pragma mark 设定动画器
+void TRBullet::setAnimator(TRAnimator *ani, TRDirection dir){
+    animator[dir] = ani;
+}
+#pragma mark 链接动画器
+void TRBullet::linkAnimator(){
+    if (!animated) {
+        return;
+    }
+    setMovingAnimated(true);
+    for(int i = 0; i < 4;i++){
+        linkMovingAnimator(animator[i], (TRDirection)i);
+    }
+}
 #pragma mark - 着弹
 void TRBullet::attackEnemy(TREnemy *obj){
     obj->beAttacked(dmg);
@@ -70,4 +101,10 @@ bool TRBullet::isUsed(){
 #pragma mark - 渲染
 void TRBullet::render(){
     TRSprite::render();
+}
+
+#pragma mark - 移动
+void TRBullet::move(){
+    linkAnimator();
+    TRSprite::move();
 }

@@ -10,11 +10,12 @@
 
 TRHero::TRHero(){
     const int INF = 0x3f3f3f3f;
+    isFiring = false;
     anilock = false;
     anilockrem = 0;
     atk_cd = atk_cd_rem = 0;
     fire_cd = 0;
-    bullet_cd = bullet_cd_rem = 0;
+    bullet_cd = bullet_cd_rem = 10;
     alive = true;
     attacking = false;
     standingAnimated = false;
@@ -235,35 +236,30 @@ void TRHero::debuff_clear(){
 }
 
 #pragma mark - 远程攻击
-TRBullet* TRHero::fire(){
-    if(bullet_cd_rem <= 0 && !flgdebuff_nogun){
-        TRBullet *bul = new TRBullet;
-        bul -> setDamage(bullet_dmg);
-        bul -> setDirection((TRDirection)getDirection());
-        bul -> setSpeed(bullet_vel);
-        bul -> setType(TRBulletFriendly);
-        bul -> startMoving();
-        lock(fire_cd);
-        return bul;
+void TRHero::fire(){
+    if(!flgdebuff_nogun && bullet_cd_rem <= 0){
+        isFiring = true;
+        bullet_cd_rem = bullet_cd;
     }
-    return (TRBullet*)NULL;
 }
 
-void TRHero::setBulletDamage(int ndmg){
-    bullet_dmg = ndmg;
+bool TRHero::willFire(){
+    return isFiring;
 }
 
-int TRHero::getBulletDamage(){
-    return bullet_dmg;
+void TRHero::fireDone(){
+    isFiring = false;
 }
 
-void TRHero::setBulletSpeed(int nvel){
-    bullet_vel = nvel;
+void TRHero::setBulletKey(std::string key){
+    bul_key = key;
 }
 
-int TRHero::getBulletSpeed(){
-    return bullet_vel;
+std::string TRHero::getBulletKey(){
+    return bul_key;
 }
+
+
 
 #pragma mark - 移动
 void TRHero::startMoveUp(){
@@ -318,6 +314,12 @@ void TRHero::move(){
         }
     }
     atk_cd_rem--,bullet_cd_rem--;
+    if (atk_cd_rem < 0) {
+        atk_cd_rem = 0;
+    }
+    if(bullet_cd_rem < 0){
+        bullet_cd_rem = 0;
+    }
     if(is_debuff_Bleed()){
         debuff_bleed_rem--;
         setHP(getHP() - debuff_bleed_dmg);
@@ -351,13 +353,12 @@ void TRHero::move(){
 
 #pragma mark - 渲染
 void TRHero::render(){
-    
     TRSprite::render();
 }
 
 #pragma mark - 治疗
 void TRHero::heal(int det){
-    setHP(std::max(getMaxHP(),getHP()+det));
+    setHP(std::min(getMaxHP(),getHP()+det));
 }
 
 #pragma mark - 动画

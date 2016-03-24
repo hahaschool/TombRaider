@@ -66,11 +66,11 @@ public:
     int rem_debuff_Nogun();
     
     //开枪
-    TRBullet* fire();
-    void setBulletDamage(int dmg);
-    int getBulletDamage();
-    void setBulletSpeed(int nvel);
-    int getBulletSpeed();
+    void fire();
+    void fireDone();
+    bool willFire();
+    void setBulletKey(std::string key);
+    std::string getBulletKey();
     
     //移动
     void startMoveUp();
@@ -164,14 +164,15 @@ private:
     int debuff_nogun_rem;
     
     //gun
-    int bullet_dmg;
-    int bullet_vel;
+    bool isFiring;
+    std::string bul_key;
     
     //death rect
     SDL_Rect deathRect[4];
     
     //攻击范围系数
     double atkFactor;
+    
 };
 
 #endif /* TRHero_hpp */

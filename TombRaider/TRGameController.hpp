@@ -65,8 +65,10 @@ public:
     void loadDefaultMaplist();
     //读入道具默认值
     void loadDefaultItem();
-    //杜如陷阱默认值
+    //读入陷阱默认值
     void loadDefaultTrap();
+    //读入子弹默认值
+    void loadDefaultBullet();
     //载入地图
     void loadMapFromFile(std::string path);
     
@@ -106,6 +108,8 @@ public:
     void createItem(std::string defaultKey,int x,int y,int h,int w);
     //创建陷阱
     void createTrap(std::string defaultKey,int x,int y,int h,int w);
+    //创建子弹
+    void createBullet(std::string defaultKey,int x,int y,TRBulletType typ,TRDirection dir);
     //创建血条
     void createHp(std::string defaultKey,int x,int y,int h,int w);
     
@@ -154,7 +158,7 @@ private:
     std::map<std::string,TRHero *> defaultHeroMap;
     std::map<std::string,TRItem *> defaultItemMap;
     std::map<std::string,TRTrap *> defaultTrapMap;
-    
+    std::map<std::string,TRBullet *> defaultBulletMap;
     
     std::map<std::string,TRhp *>defaultHpMap;
     
