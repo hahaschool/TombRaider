@@ -15,6 +15,7 @@ TREnemy::TREnemy(){
     alive = true;
     chasing = false;
     turretMode = false;
+    flgFollowMode = false;
 }
 
 #pragma mark - 贴图和动画配置
@@ -371,6 +372,16 @@ bool TREnemy::willFire(){
 #pragma mark 炮弹已经射出消息
 void TREnemy::doneFire(){
     flgfire = false;
+}
+
+#pragma mark 设定成跟随当前方向发射
+void TREnemy::setFollowMode(bool flg){
+    flgFollowMode = flg;
+}
+
+#pragma mark 检测是否跟随当前方向发射
+bool TREnemy::isFollowMode(){
+    return flgFollowMode;
 }
 
 #pragma mark 开关炮弹的发射方向

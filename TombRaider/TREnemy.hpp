@@ -101,6 +101,8 @@ public:
     void setBulletKey(std::string key);
     bool canFireAt(TRDirection dir);
     void setFireCooldown(int intr);
+    void setFollowMode(bool flg);
+    bool isFollowMode();
     std::string getBulletKey();
     
 private:
@@ -132,6 +134,7 @@ private:
     
     //Turret Configuration
     bool turretMode;
+    bool flgFollowMode;
     bool flgfire;
     bool canfire[4];
     int bul_cd_rem,bul_cd;

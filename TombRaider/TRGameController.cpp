@@ -353,14 +353,20 @@ void TRGameController::loadDefaultEnemy(){
             //炮台追加设定
             std::string bname;
             int bcd;
-            for(int j = 0; j < 4; j++){
-                ifs >> flg;
-                if(flg == "yes"){
-                    enm -> setFireDirection((TRDirection)j, true);
-                }else{
-                    enm -> setFireDirection((TRDirection)j, false);
+            ifs >> flg;
+            if(flg == "manual"){
+                for(int j = 0; j < 4; j++){
+                    ifs >> flg;
+                    if(flg == "yes"){
+                        enm -> setFireDirection((TRDirection)j, true);
+                    }else{
+                        enm -> setFireDirection((TRDirection)j, false);
+                    }
                 }
+            }else if(flg == "follow"){
+                enm -> setFollowMode(true);
             }
+            
             ifs >> bname >> bcd;
             enm -> setBulletKey(bname);
             enm -> setFireCooldown(bcd);
@@ -750,9 +756,13 @@ void TRGameController::runFrame(){
     }
     for(std::list<TREnemy*>::iterator it = gEnemyList.begin();it != gEnemyList.end();it++){
         if ((*it) -> willFire()) {
-            for(int j = 0; j < 4; j++){
-                if ((*it)->canFireAt((TRDirection)j)) {
-                    createBullet((*it)->getBulletKey(), (*it)->getX() + (*it)->getWidth()/2, (*it)->getY() + (*it)->getHeight()/2, TRBulletHostile, (TRDirection)j);
+            if ((*it) -> isFollowMode()) {
+                createBullet((*it)->getBulletKey(), (*it)->getX() + (*it)->getWidth()/2, (*it)->getY() + (*it)->getHeight()/2, TRBulletHostile, (TRDirection)((*it)->getDirection()));
+            }else{
+                for(int j = 0; j < 4; j++){
+                    if ((*it)->canFireAt((TRDirection)j)) {
+                        createBullet((*it)->getBulletKey(), (*it)->getX() + (*it)->getWidth()/2, (*it)->getY() + (*it)->getHeight()/2, TRBulletHostile, (TRDirection)j);
+                    }
                 }
             }
             (*it) -> doneFire();
