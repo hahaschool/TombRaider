@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		E03ABAF01CA42AE10016C79A /* TRInterface.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E03ABAEE1CA42AE10016C79A /* TRInterface.cpp */; };
 		E05CCB5C1C9B1D6100A66883 /* TRItem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E05CCB5A1C9B1D6100A66883 /* TRItem.cpp */; };
 		E0969EAB1C6CEC2000932AA0 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E0969EAA1C6CEC2000932AA0 /* main.cpp */; };
 		E0969EB31C6D9B9200932AA0 /* TRTexture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E0969EB11C6D9B9200932AA0 /* TRTexture.cpp */; };
@@ -43,6 +44,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		E03ABAEE1CA42AE10016C79A /* TRInterface.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TRInterface.cpp; sourceTree = "<group>"; };
+		E03ABAEF1CA42AE10016C79A /* TRInterface.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = TRInterface.hpp; sourceTree = "<group>"; };
 		E05CCB5A1C9B1D6100A66883 /* TRItem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TRItem.cpp; sourceTree = "<group>"; };
 		E05CCB5B1C9B1D6100A66883 /* TRItem.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = TRItem.hpp; sourceTree = "<group>"; };
 		E0969EA71C6CEC2000932AA0 /* TombRaider */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = TombRaider; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -125,6 +128,8 @@
 				E0F0A7641C99A992003ECDA5 /* TRhp.h */,
 				E0F0A75D1C99A6C7003ECDA5 /* TRBgm.cpp */,
 				E0F0A75E1C99A6C7003ECDA5 /* TRBgm.h */,
+				E03ABAEE1CA42AE10016C79A /* TRInterface.cpp */,
+				E03ABAEF1CA42AE10016C79A /* TRInterface.hpp */,
 				E0F931F51C70BFC6006ED7E3 /* TRGrider.cpp */,
 				E0F931F61C70BFC6006ED7E3 /* TRGrider.hpp */,
 				E0F931F21C7083F4006ED7E3 /* TRPathFinder.cpp */,
@@ -232,6 +237,7 @@
 				E0969EC51C6E390000932AA0 /* TRHero.cpp in Sources */,
 				E0F0A75F1C99A6C7003ECDA5 /* TRBgm.cpp in Sources */,
 				E0969ECE1C6E48AD00932AA0 /* TRSprite.cpp in Sources */,
+				E03ABAF01CA42AE10016C79A /* TRInterface.cpp in Sources */,
 				E0F931F71C70BFC6006ED7E3 /* TRGrider.cpp in Sources */,
 				E0F931F41C7083F4006ED7E3 /* TRPathFinder.cpp in Sources */,
 				E0969EAB1C6CEC2000932AA0 /* main.cpp in Sources */,

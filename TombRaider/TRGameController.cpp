@@ -303,10 +303,14 @@ void TRGameController::loadDefaultEnemy(){
             enm -> setType(TREnemyRandom);
         }else if(type == "smart"){
             enm -> setType(TREnemySmart);
+        }else if(type == "turret"){
+            enm -> setType(TREnemyTurret);
+            enm -> setTurretMode(true);
         }
         int hp,dmg,arm,vel,cd;
         ifs >> hp >> dmg >> arm >> vel >> cd;
         enm -> setHP(hp);
+        enm -> setMaxHP(hp);
         enm -> setDamage(dmg);
         enm -> setSpeed(vel);
         enm -> setArmour(arm);
@@ -343,6 +347,24 @@ void TRGameController::loadDefaultEnemy(){
         }else{
             enm -> setAttackingAnimated(false);
         }
+        ifs >> flg;
+        if (flg == "yes") {
+            enm -> setTurretMode(true);
+            //炮台追加设定
+            std::string bname;
+            int bcd;
+            for(int j = 0; j < 4; j++){
+                ifs >> flg;
+                if(flg == "yes"){
+                    enm -> setFireDirection((TRDirection)j, true);
+                }else{
+                    enm -> setFireDirection((TRDirection)j, false);
+                }
+            }
+            ifs >> bname >> bcd;
+            enm -> setBulletKey(bname);
+            enm -> setFireCooldown(bcd);
+        }
     }
     ifs.close();
 }
@@ -375,6 +397,7 @@ void TRGameController::loadDefaultHero(){
         ho -> setArmour(arm);
         ho -> setBulletKey(bname);
         ho -> setAttackRangeFactor(0.8);
+        ho -> setColliderFactor(0.8);
         ifs >> name;
         ho -> linkTexture(gTextureKeyMap[name]);
         for(int j = 0; j < 4; j++){
@@ -645,6 +668,7 @@ void TRGameController::handleEvent(SDL_Event &e){
                 case SDLK_z:
                     flgAttackPerformed = hero -> performAttack();
                     gBgm->playMusic("Resources/Bgm/hero_battle.wav",true);
+                    break;
                 case SDLK_x:
                     hero -> fire();
                     break;
@@ -724,6 +748,16 @@ void TRGameController::runFrame(){
         createBullet(hero -> getBulletKey(), hero -> getX() + hero -> getWidth()/2, hero -> getY() + hero -> getHeight()/2, TRBulletFriendly, (TRDirection)(hero -> getDirection()));
         hero -> fireDone();
     }
+    for(std::list<TREnemy*>::iterator it = gEnemyList.begin();it != gEnemyList.end();it++){
+        if ((*it) -> willFire()) {
+            for(int j = 0; j < 4; j++){
+                if ((*it)->canFireAt((TRDirection)j)) {
+                    createBullet((*it)->getBulletKey(), (*it)->getX() + (*it)->getWidth()/2, (*it)->getY() + (*it)->getHeight()/2, TRBulletHostile, (TRDirection)j);
+                }
+            }
+            (*it) -> doneFire();
+        }
+    }
     //Bullet itself
     for(std::list<TRBullet*>::iterator it = gBulletList.begin();it != gBulletList.end();it++){
         (*it) -> move();
@@ -799,9 +833,6 @@ void TRGameController::runFrame(){
     for(std::list<TRMapTile*>::iterator it = gMapTileList.begin();it != gMapTileList.end();it++){
         (*it) -> render();
     }
-    for(std::list<TREnemy*>::iterator it = gEnemyList.begin(); it != gEnemyList.end(); it++){
-        (*it) -> render();
-    }
     for(std::list<TRBullet*>::iterator it = gBulletList.begin();it != gBulletList.end();it++){
         (*it) -> render();
     }
@@ -814,7 +845,19 @@ void TRGameController::runFrame(){
     for(std::list<TRBullet*>::iterator it = gBulletList.begin(); it != gBulletList.end();it++){
         (*it) -> render();
     }
+    for(std::list<TREnemy*>::iterator it = gEnemyList.begin(); it != gEnemyList.end(); it++){
+        (*it) -> render();
+    }
     hero -> render();
+    
+    //Render HP Gauge
+    for(std::list<TREnemy*>::iterator it = gEnemyList.begin();it != gEnemyList.end();it++){
+        SDL_Rect outer = {(*it)->getX()-gCameraBox.x,(*it)->getY()-5-gCameraBox.y,(*it)->getWidth(),3};
+        SDL_Rect inner = {(*it)->getX()-gCameraBox.x,(*it)->getY()-5-gCameraBox.y,((*it)->getWidth()*(*it)->getHP()/((*it)->getMaxHP())),3};
+        SDL_SetRenderDrawColor(gRenderer, 0xff, 0, 0, 0xff);
+        SDL_RenderFillRect(gRenderer, &inner);
+        SDL_RenderDrawRect(gRenderer, &outer);
+    }
 }
 
 
@@ -955,38 +998,35 @@ void TRGameController::createBullet(std::string defaultKey, int x, int y, TRBull
 }
 
 
-void TRGameController::createHp(std::string defaultKey,int x,int y,int h,int w){
-    TRhp *hp = new TRhp;
-    //*hp = *defaultHpMap[defaultKey];
-    hp -> setX(x);
-    hp -> setY(y);
-    hp -> setHeight(h);
-    hp -> setWidth(w);
-    //hp -> setCurClip({0,0,w,h});
-    //hp -> linkCameraRect(&gCameraBox);
-    //hp -> linkLevelRect(&gLevelBox);
-    hp -> linkTexture(gTextureKeyMap[defaultKey]);
-    heroHp = hp;
+#pragma mark - 游戏过程控制
+#pragma mark 切换地图
+void TRGameController::nextMap()
+{
+    //this->loadMapFromFile();
 }
 
-
+#pragma mark 开始游戏
 void TRGameController::startGame(){
     flgGameStarted = true;
     flgGamePaused = false;
 }
 
+#pragma mark 暂停游戏
 void TRGameController::pauseGame(){
     flgGamePaused = true;
 }
 
+#pragma mark 恢复游戏
 void TRGameController::resumeGame(){
     flgGamePaused = false;
 }
 
+#pragma mark 检测游戏是否暂停
 bool TRGameController::isGamePausing(){
     return flgGamePaused;
 }
 
+#pragma mark 检测游戏是否正在运行
 bool TRGameController::isGameRunning(){
     if(flgGameStarted && !flgGamePaused){
         return true;
@@ -994,6 +1034,25 @@ bool TRGameController::isGameRunning(){
     return false;
 }
 
+#pragma mark - 游戏设定
+#pragma mark 设定屏幕（摄像机）尺寸
+void TRGameController::setCamera(int h,int w){
+    gCameraBox.h = h;
+    gCameraBox.w = w;
+}
+
+#pragma mark 链接坐标转换器
+void TRGameController::linkGrider(TRGrider *grid){
+    gGrider = grid;
+}
+
+#pragma mark 链接寻路器
+void TRGameController::linkPathfinder(TRPathFinder *pf){
+    gPathFinder = pf;
+}
+
+#pragma mark - 辅助
+#pragma mark 碰撞检测
 bool TRGameController::checkCollision(SDL_Rect a, SDL_Rect b){
     int leftA, leftB;
     int rightA, rightB;
@@ -1030,20 +1089,3 @@ bool TRGameController::checkCollision(SDL_Rect a, SDL_Rect b){
     return true;
 }
 
-void TRGameController::setCamera(int h,int w){
-    gCameraBox.h = h;
-    gCameraBox.w = w;
-}
-
-void TRGameController::linkGrider(TRGrider *grid){
-    gGrider = grid;
-}
-
-void TRGameController::linkPathfinder(TRPathFinder *pf){
-    gPathFinder = pf;
-}
-
-void TRGameController::nextMap()
-{
-    //this->loadMapFromFile();
-}
