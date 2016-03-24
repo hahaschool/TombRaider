@@ -95,7 +95,7 @@ struct TRItem : public TRMapTile{
     
     
     
-    static const int MKRRANGE = 60;
+    static const int MKRRANGE = 80;
     int mht(){
         return abs(hero->getX() - this->getX()) + abs(hero->getY() - this->getY());
     }

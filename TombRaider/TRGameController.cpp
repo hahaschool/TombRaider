@@ -48,6 +48,8 @@ void TRGameController::initialize(){
     defaultEnemyMap.clear();
     defaultHeroMap.clear();
     defaultHpMap.clear();
+    defaultItemMap.clear();
+    defaultTrapMap.clear();
 }
 
 void TRGameController::clearStage(){
@@ -56,6 +58,7 @@ void TRGameController::clearStage(){
     gEnemyList.clear();
     gBulletList.clear();
     gItemList.clear();
+    gTrapList.clear();
 }
 
 #pragma mark - 文件读入
@@ -86,8 +89,8 @@ void TRGameController::loadMapFromFile(std::string path){
                     createMapTile("wall/out",TRMapTileTypeTeleport,j*50,i*50,50,50);
                     break;
                 case 'w':
-                    gPathFinder->setMatrix(j,i,TRPathFinderMatrixObstacle);
-                    createMapTile("wall/shui", TRMapTileTypeWall, j*50, i*50, 50, 50);
+                    gPathFinder->setMatrix(j,i,TRPathFinderMatrixRoad);
+                    createTrap("trap/slow/water", j*50, i*50, 50, 50);
                     break;
                 case 't':
                     createMapTile("map/tree",TRMapTileTypeGround,j*50,i*50,50,50);
@@ -118,7 +121,8 @@ void TRGameController::loadMapFromFile(std::string path){
                     createItem("item/heal/herb", j*50, i*50, 50, 50);
                     break;
                 case 'b':
-                    createMapTile("map/brick",TRMapTileTypeGround, j*50, i*50, 50, 50);
+                    gPathFinder->setMatrix(j, i, TRPathFinderMatrixObstacle);
+                    createMapTile("map/brick",TRMapTileTypeWall, j*50, i*50, 50, 50);
                     break;
                 case 'g':
                     createEnemy("guard",j*50,i*50,50,37.5);
@@ -244,6 +248,8 @@ void TRGameController::loadDefault(){
     loadDefaultHero();
     loadDefaultMaplist();
     loadDefaultItem();
+    loadDefaultTrap();
+    loadDefaultBullet();
 }
 
 #pragma mark 读入动画器默认值
@@ -358,16 +364,16 @@ void TRGameController::loadDefaultHero(){
         ho -> linkLevelRect(&gLevelBox);
         ifs >> id >> name;
         defaultHeroMap[name] = ho;
-        int hp,arm,dmg,vel,cd,bdmg,bvl;
-        ifs >> hp >> arm >> dmg >> vel >> cd >> bdmg >> bvl;
+        int hp,arm,dmg,vel,cd;
+        std::string bname;
+        ifs >> hp >> arm >> dmg >> vel >> cd >> bname;
         ho -> setHP(hp);
         ho -> setMaxHP(hp);
         ho -> setVelocity(vel);
         ho -> setDamage(dmg);
         ho -> setAttackCD(cd);
         ho -> setArmour(arm);
-        ho -> setBulletDamage(bdmg);
-        ho -> setBulletSpeed(bvl);
+        ho -> setBulletKey(bname);
         ho -> setAttackRangeFactor(0.8);
         ifs >> name;
         ho -> linkTexture(gTextureKeyMap[name]);
@@ -490,6 +496,117 @@ void TRGameController::loadDefaultItem(){
     ifs.close();
 }
 
+#pragma mark 读入陷阱默认值
+void TRGameController::loadDefaultTrap(){
+    std::ifstream ifs("Resources/Config/Trap.cfg");
+    int n;
+    while (ifs.peek() == '/') {
+        std::string filter;
+        std::getline(ifs, filter);
+    }
+    ifs >> n;
+    for(int i = 1;i <= n; i++){
+        int id,ww,hh,arg1;
+        std::string name,tname,type1,type2;
+        ifs >> id >> name >> tname >> ww >> hh >> type1 >> arg1 >> type2;
+        TRTrap *ntr = new TRTrap;
+        ntr -> setPassBy(true);
+        ntr -> linkCameraRect(&gCameraBox);
+        ntr -> linkLevelRect(&gLevelBox);
+        ntr -> linkTexture(gTextureKeyMap[tname]);
+        ntr -> setWidth(ww);
+        ntr -> setHeight(hh);
+        ntr -> setColliderFactor(0.8);
+        ntr -> setCurClip({0,0,ww,hh});
+        if(type1 == "SLOW"){
+            ntr -> setSlowdownValue(arg1);
+            if (type2 == "EPHERMAL") {
+                ntr -> setType(TRTrapSlow | TRTrapEphermal);
+            }else{
+                ntr -> setType(TRTrapSlow | TRTrapLasting);
+                int sleeptime,arg2;
+                ifs >> sleeptime >> arg2;
+                ntr -> setSleepTime(sleeptime);
+                ntr -> setDebuffInterval(arg2);
+            }
+        }else if(type1 == "BLEED"){
+            ntr -> setBleedValue(arg1);
+            if (type2 == "EPHERMAL") {
+                ntr -> setType(TRTrapBleed | TRTrapEphermal);
+            }else{
+                ntr -> setType(TRTrapBleed | TRTrapLasting);
+                int sleeptime,arg2;
+                ifs >> sleeptime >> arg2;
+                ntr -> setSleepTime(sleeptime);
+                ntr -> setDebuffInterval(arg2);
+            }
+        }else if(type1 == "FREEZE"){
+            if (type2 == "LAST") {
+                ntr -> setType(TRTrapFreeze | TRTrapLasting);
+                int arg2;
+                ifs >> arg2;
+                ntr -> setSleepTime(arg1);
+                ntr -> setDebuffInterval(arg2);
+                ntr -> setColliderFactor(0.1);
+            }
+        }else if(type1 == "NOGUN"){
+            if (type2 == "EPHERMAL") {
+                ntr -> setType(TRTrapNoGun | TRTrapEphermal);
+            }else{
+                ntr -> setType(TRTrapNoGun | TRTrapLasting);
+                int sleeptime,arg2;
+                ntr -> setSleepTime(sleeptime);
+                ntr -> setDebuffInterval(arg2);
+            }
+        }
+        defaultTrapMap[name] = ntr;
+    }
+    ifs.close();
+}
+
+#pragma mark 读入子弹默认值
+void TRGameController::loadDefaultBullet(){
+    std::ifstream ifs("Resources/Config/Bullet.cfg");
+    int n;
+    while (ifs.peek() == '/') {
+        std::string filter;
+        std::getline(ifs, filter);
+    }
+    ifs >> n;
+    for(int i = 1; i<= n; i++){
+        int id,dmg,vel;
+        std::string name,tname;
+        ifs >> id >> name >> dmg >> vel >> tname;
+        TRBullet *nbl = new TRBullet;
+        defaultBulletMap[name] = nbl;
+        nbl -> setSpeed(vel);
+        nbl -> setDamage(dmg);
+        nbl -> linkCameraRect(&gCameraBox);
+        nbl -> linkLevelRect(&gLevelBox);
+        nbl -> linkTexture(gTextureKeyMap[tname]);
+        for(int j = 0; j< 4; j++){
+            int x,y,h,w;
+            ifs >> x >> y >> h >> w;
+            nbl -> setStaticClip({x,y,w,h}, (TRDirection)j);
+            nbl -> setWidth(w);
+            nbl -> setHeight(h);
+        }
+        std::string flg;
+        ifs >> flg;
+        if(flg == "yes"){
+            nbl -> setAnimated(false);
+            for(int j = 0; j < 4; j++){
+                ifs >> name;
+                nbl -> setAnimator(gAnimatorKeyMap[name], (TRDirection)j);
+            }
+        }else{
+            nbl -> setAnimated(false);
+        }
+    }
+    ifs.close();
+}
+
+
 void TRGameController::gameOver(){
     flgGameStarted = false;
     flgGamePaused = false;
@@ -529,8 +646,7 @@ void TRGameController::handleEvent(SDL_Event &e){
                     flgAttackPerformed = hero -> performAttack();
                     gBgm->playMusic("Resources/Bgm/hero_battle.wav",true);
                 case SDLK_x:
-                    lastFire = hero -> fire();
-                    flgFired = lastFire != NULL;
+                    hero -> fire();
                     break;
                 case SDLK_c:
                     willPickupItem = true;
@@ -567,6 +683,8 @@ void TRGameController::runFrame(){
         return;
     }
     
+    printf("HP : %d\n",hero->getHP());
+    
     //Calculate enemy's moving
     for(std::list<TREnemy*>::iterator it = gEnemyList.begin(); it != gEnemyList.end(); it++){
         (*it) -> move();
@@ -601,6 +719,43 @@ void TRGameController::runFrame(){
     centerCameraByObject(hero);
     
     //Calculate Bullets
+    //Hero firing bullets
+    if(hero -> willFire()){
+        createBullet(hero -> getBulletKey(), hero -> getX() + hero -> getWidth()/2, hero -> getY() + hero -> getHeight()/2, TRBulletFriendly, (TRDirection)(hero -> getDirection()));
+        hero -> fireDone();
+    }
+    //Bullet itself
+    for(std::list<TRBullet*>::iterator it = gBulletList.begin();it != gBulletList.end();it++){
+        (*it) -> move();
+        if((*it) -> getType() == TRBulletFriendly){
+            //Check collide with enemy
+            for(std::list<TREnemy*>::iterator itt = gEnemyList.begin();itt != gEnemyList.end();itt++){
+                if(checkCollision((*it)->getBoxRect(), (*itt) -> getBoxRect())){
+                    (*it) -> attackEnemy((*itt));
+                    break;
+                }
+            }
+            if((*it) -> isUsed()){
+                gBulletList.erase(it);
+                break;
+            }
+        }else{
+            //Check collide with hero
+            if(checkCollision(hero -> getColliderRect(), (*it) -> getBoxRect())){
+                (*it) -> attackHero(hero);
+                gBulletList.erase(it);
+                break;
+            }
+        }
+        
+        //check collide with wall
+        for(std::list<TRMapTile*>::iterator itt = gMapTileList.begin();itt != gMapTileList.end();itt++){
+            if(!(*itt)->isPassBy() && checkCollision((*it) -> getBoxRect(), (*itt) -> getBoxRect())){
+                gBulletList.erase(it);
+                break;
+            }
+        }
+    }
     
     //Calculate Attacks
     if (flgAttackPerformed) {
@@ -629,6 +784,13 @@ void TRGameController::runFrame(){
         }
     }
     
+    //Check Traps
+    for(std::list<TRTrap*>::iterator it = gTrapList.begin();it != gTrapList.end();it++){
+        if (checkCollision(hero->getBoxRect(), (*it)->getColliderRect())) {
+            (*it) -> activate();
+        }
+    }
+    
     //Calculate debuffs
     
     
@@ -644,6 +806,12 @@ void TRGameController::runFrame(){
         (*it) -> render();
     }
     for(std::list<TRItem*>::iterator it = gItemList.begin();it != gItemList.end();it++){
+        (*it) -> render();
+    }
+    for(std::list<TRTrap*>::iterator it = gTrapList.begin();it != gTrapList.end();it++){
+        (*it) -> render();
+    }
+    for(std::list<TRBullet*>::iterator it = gBulletList.begin(); it != gBulletList.end();it++){
         (*it) -> render();
     }
     hero -> render();
@@ -750,7 +918,6 @@ void TRGameController::createHero(std::string defaultKey,int x,int y,int h,int w
     hr -> setY(y);
     hr -> setHeight(h);
     hr -> setWidth(w);
-    this -> createHp("bloodBar",x,y,h-5,w);
     hero = hr;
 }
 #pragma mark 创建道具
@@ -764,6 +931,29 @@ void TRGameController::createItem(std::string defaultKey, int x, int y, int h, i
     ci -> linkHero(hero);
     gItemList.insert(gItemList.end(), ci);
 }
+#pragma mark 创建陷阱
+void TRGameController::createTrap(std::string defaultKey, int x, int y, int h, int w){
+    TRTrap *ctr = new TRTrap;
+    *ctr = *defaultTrapMap[defaultKey];
+    ctr -> setX(x);
+    ctr -> setY(y);
+    ctr -> setHeight(h);
+    ctr -> setWidth(w);
+    ctr -> linkHero(hero);
+    gTrapList.insert(gTrapList.end(), ctr);
+}
+#pragma mark 创建子弹
+void TRGameController::createBullet(std::string defaultKey, int x, int y, TRBulletType typ,TRDirection dir){
+    TRBullet *cbl = new TRBullet;
+    *cbl = *defaultBulletMap[defaultKey];
+    cbl -> setType(typ);
+    cbl -> setDirection(dir);
+    cbl -> setX(x);
+    cbl -> setY(y);
+    cbl -> startMoving();
+    gBulletList.insert(gBulletList.end(), cbl);
+}
+
 
 void TRGameController::createHp(std::string defaultKey,int x,int y,int h,int w){
     TRhp *hp = new TRhp;
