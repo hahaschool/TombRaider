@@ -9,10 +9,13 @@
 #include "TREnemy.hpp"
 
 TREnemy::TREnemy(){
+    flgfire = false;
     anilock = false;
     anilockrem = 0;
     alive = true;
     chasing = false;
+    turretMode = false;
+    flgFollowMode = false;
 }
 
 #pragma mark - 贴图和动画配置
@@ -84,6 +87,14 @@ TREnemyType TREnemy::getType(){
 
 void TREnemy::setHP(int nhp){
     hp = nhp;
+}
+
+void TREnemy::setMaxHP(int mhp){
+    maxHP = mhp;
+}
+
+int TREnemy::getMaxHP(){
+    return maxHP;
 }
 
 void TREnemy::setDamage(int ndmg){
@@ -242,6 +253,12 @@ void TREnemy::move(){
                 moveAlongPath();
             }
         }
+        if(turretMode){
+            if (--bul_cd_rem < 0) {
+                bul_cd_rem = bul_cd;
+                flgfire = true;
+            }
+        }
     }
 }
 
@@ -342,6 +359,55 @@ void TREnemy::endMoving(){
     TRSprite::endMoving();
 }
 
+#pragma mark - 炮台设定
+#pragma mark 设定炮台模式
+void TREnemy::setTurretMode(bool flg){
+    turretMode = flg;
+}
+#pragma mark 检测是否发出炮弹
+bool TREnemy::willFire(){
+    return flgfire;
+}
+
+#pragma mark 炮弹已经射出消息
+void TREnemy::doneFire(){
+    flgfire = false;
+}
+
+#pragma mark 设定成跟随当前方向发射
+void TREnemy::setFollowMode(bool flg){
+    flgFollowMode = flg;
+}
+
+#pragma mark 检测是否跟随当前方向发射
+bool TREnemy::isFollowMode(){
+    return flgFollowMode;
+}
+
+#pragma mark 开关炮弹的发射方向
+void TREnemy::setFireDirection(TRDirection dir, bool flg){
+    canfire[dir] = flg;
+}
+
+#pragma mark 设置子弹Key
+void TREnemy::setBulletKey(std::string key){
+    bulKey = key;
+}
+
+#pragma mark 获得子弹Key
+std::string TREnemy::getBulletKey(){
+    return bulKey;
+}
+
+#pragma mark 是否能在某个方向发出炮弹
+bool TREnemy::canFireAt(TRDirection dir){
+    return canfire[dir];
+}
+
+#pragma mark 设定炮弹发出间隔
+void TREnemy::setFireCooldown(int intr){
+    bul_cd = bul_cd_rem = intr;
+}
 
 #pragma mark - Animator Lockdown (PRIVATE)
 void TREnemy::lock(int interval){

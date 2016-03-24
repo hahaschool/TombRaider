@@ -27,7 +27,8 @@
 
 enum TREnemyType{
     TREnemyRandom = 0,
-    TREnemySmart = 1
+    TREnemySmart = 1,
+    TREnemyTurret = 2
 };
 
 class TRHero;
@@ -49,12 +50,14 @@ public:
     //属性
     void setType(TREnemyType ntype);
     void setHP(int nhp);
+    void setMaxHP(int mhp);
     void setDamage(int ndmg);
     void setArmour(int narm);
     void setSpeed(int nvel);
     void setAttackCD(int ncd);
     TREnemyType getType();
     int getHP();
+    int getMaxHP();
     int getDamage();
     int getArmor();
     int getSpeed();
@@ -90,12 +93,23 @@ public:
     //渲染函数
     void render();
     
+    //炮塔相关设定
+    void setTurretMode(bool flg);
+    bool willFire();
+    void doneFire();
+    void setFireDirection(TRDirection dir,bool flg);
+    void setBulletKey(std::string key);
+    bool canFireAt(TRDirection dir);
+    void setFireCooldown(int intr);
+    void setFollowMode(bool flg);
+    bool isFollowMode();
+    std::string getBulletKey();
     
 private:
     int randrem;
     
     TREnemyType type;
-    
+    int maxHP;
     //animator lock
     bool anilock;
     int anilockrem;
@@ -118,6 +132,13 @@ private:
     bool attackingAnimated;
     TRAnimator *attackingAnimator[4];
     
+    //Turret Configuration
+    bool turretMode;
+    bool flgFollowMode;
+    bool flgfire;
+    bool canfire[4];
+    int bul_cd_rem,bul_cd;
+    std::string bulKey;
     
     //维护路径
     std::queue<std::pair<int,int> > path;
