@@ -29,30 +29,34 @@ class TRTrap : public TRMapTile{
 public:
     //构造器
     TRTrap();
+
+    //判断陷阱类型
+    int getType();
+
     //减速型陷阱设定
     void setSlowdownValue(int val);
-    
+
     //掉血型陷阱设定
     void setBleedValue(int val);
-    
+
     //设定施加的不良状态持续时间
     void setDebuffInterval(int interval);
-    
+
     //设定类型
     void setType(int typ);
-    
+
     //陷阱发动
     void activate();
-    
+
     //设定陷阱休眠时间
     void setSleepTime(int cdt);
-    
+
     //冷却时间自减
     void tickSleep();
-    
+
     //渲染函数
     void render();
-    
+
     void linkHero(TRHero *hro);
 private:
     TRHero *hero;

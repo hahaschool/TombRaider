@@ -25,6 +25,7 @@ class TRBullet : public TRSprite{
 public:
     //构造器
     TRBullet();
+    ~TRBullet();
     //属性
     int getSpeed();
     void setSpeed(int nvel);

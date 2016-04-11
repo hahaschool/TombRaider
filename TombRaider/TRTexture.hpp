@@ -13,7 +13,7 @@
 #include <string>
 #include <SDL2/SDL.h>
 #include <SDL2_image/SDL_image.h>
-#include <SDL2_ttf//SDL_ttf.h>
+#include <SDL2_ttf/SDL_ttf.h>
 
 class TRTexture{
 public:
@@ -23,10 +23,10 @@ public:
     ~TRTexture();
     //Load Resource Image
     bool loadFromFile(std::string path,Uint8 keyRed = 0,Uint8 keyGreen = 0xFF,Uint8 keyBlue = 0XFF);
-#ifdef _SDL_TTF_H
+//#ifdef _SDL_TTF_H
     //Load from TTF fonts
     bool loadFromRenderedText(std::string textureText,SDL_Color textColor);
-#endif
+//#endif
     //Deallocate Texture
     void free();
     //Set Blending
@@ -42,17 +42,18 @@ public:
     int getHeight();
     void linkRenderer(SDL_Renderer *renderer);
     void linkFont(TTF_Font *font);
+
 private:
     //Linked Renderer
     SDL_Renderer *mRenderer;
-    
+
     //SDL Texture
     SDL_Texture *mTexture;
-    
-#ifdef _SDL_TTF_H
+
+//#ifdef _SDL_TTF_H
     TTF_Font *mFont;
-#endif
-    
+//#endif
+
     //Image Diminsions
     int mWidth;
     int mHeight;

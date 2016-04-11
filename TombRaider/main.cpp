@@ -12,11 +12,12 @@
 #include <SDL2_ttf/SDL_ttf.h>
 #include "TRGameController.hpp"
 #include "TRTimer.hpp"
-
-const int SCREEN_WIDTH = 800;
-const int SCREEN_HEIGHT = 600;
+#include <ctime>
+const int SCREEN_WIDTH = 900;
+const int SCREEN_HEIGHT = 750;
 const int SCREEN_FPS = 60;
 const int SCREEN_TICK_PER_FRAME = 1000 / SCREEN_FPS;
+const int BLOOD_LENGTH = 300;
 
 SDL_Window *gWindow = NULL;
 SDL_Renderer *gRenderer = NULL;
@@ -27,15 +28,15 @@ TRGameController *gGameController = NULL;
 bool init(){
     //初始化成功标志
     bool success = true;
-    
+
     gGameController = new TRGameController;
-    
+
     gGrider = new TRGrider;
-    
+
     gPathFinder = new TRPathFinder;
-    
-    
-    
+
+
+
     if( SDL_Init( SDL_INIT_VIDEO | SDL_INIT_AUDIO ) < 0 ){
         printf( "SDL could not initialize! SDL Error: %s\n", SDL_GetError() );
         success = false;
@@ -57,7 +58,7 @@ bool init(){
                 success = false;
             }else{
                 //设定渲染器默认颜色
-                SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
+                SDL_SetRenderDrawColor(gRenderer, 0, 0, 0, 0);
                 //初始化PNG载入
                 int imgFlag = IMG_INIT_PNG;
                 if(!(IMG_Init(imgFlag) & imgFlag)){
@@ -67,6 +68,11 @@ bool init(){
                 if( Mix_OpenAudio( 44100, MIX_DEFAULT_FORMAT, 2, 2048 ) < 0 )
                 {
                     printf( "SDL_mixer could not initialize! SDL_mixer Error: %s\n", Mix_GetError() );
+                    success = false;
+                }
+                if(TTF_Init()==-1)
+                {
+                    printf("SDL_ttf could not initialize!SDL_ttf error: %s\n",TTF_GetError());
                     success = false;
                 }
 
@@ -79,12 +85,12 @@ bool init(){
     gGameController -> linkGrider(gGrider);
     gGameController -> linkPathfinder(gPathFinder);
     gGameController -> loadResources();
-    
+
     gGrider -> tileHeight = 50;
     gGrider -> tileWidth = 50;
-    
+
     gPathFinder -> setHeuristic(TRPathFinderHeuristicEuler);
-    
+
     return success;
 }
 
@@ -94,42 +100,44 @@ void close(){
     SDL_DestroyWindow(gWindow);
     gWindow = NULL;
     gRenderer = NULL;
-    
+
     //Quit SDL subsystem
+    TTF_Quit();
     IMG_Quit();
     SDL_Quit();
 }
 
-int main(int argc, const char * argv[]) {
+int main(int argc,char * argv[]) {
     srand(time(NULL));
     if (!init()) {
         printf("Error:Failed to load.\n");
     }else{
         bool quit = false;
         SDL_Event e;
-        
+
         //dubug
-        gGameController -> createHero("hahaschool", 50, 50, 48, 32);
-        gGameController->loadMapFromFile("Resources/Mapdata/test.map");
-        for(int i = 1; i <= 1; i++){
+        //gGameController->createMapTile("background7",TRMapTileTypeGround,0,0,1500,1500);
+
+        //gGameController -> createHero("hahaschool", 50, 50, 48, 32);
+        //gGameController->loadLeadingMapFromFile("Resources/Mapdata/map5.map");
+        //gGameController->loadMapFromFile("Resources/Mapdata/map5.map");
+        /*for(int i = 1; i <= 5; i++){
             for(int j = 1; j<= 5; j++){
                 gGameController -> createEnemy("bat", 10*i+50, 10*j+50, 50, 50);
             }
-        }
-        
-        
+        }*/
         gGameController -> startGame();
-        
+
         //The frames per second timer
         TRTimer fpsTimer;
-        
+
         //The frames per second cap timer
         TRTimer capTimer;
-        
+
         //Start counting frames per second
         int countedFrames = 0;
         fpsTimer.start();
-        
+
         while(!quit){
             //Start cap timer
             capTimer.start();
@@ -143,13 +151,13 @@ int main(int argc, const char * argv[]) {
             {
                 avgFPS = 0;
             }
-            
-            
+
+
             SDL_SetRenderDrawColor( gRenderer, 0xFF, 0xFF, 0xFF, 0xFF );
             SDL_RenderClear( gRenderer );
             gGameController -> runFrame();
             SDL_RenderPresent( gRenderer );
-            
+
             //If frame finished early
             int frameTicks = capTimer.getTicks();
             if( frameTicks < SCREEN_TICK_PER_FRAME )

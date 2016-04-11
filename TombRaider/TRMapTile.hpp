@@ -25,33 +25,34 @@ public:
     bool isPassBy();
     void setPassBy(bool flg);
     void setType(TRMapTileType typ);
-    
+    TRMapTileType getType();
+
     //门相关
     void openDoor();
     void closeDoor();
     void linkOpenTexutre(TRTexture *txt);
     void linkCloseTexture(TRTexture *txt);
-    
+
     //传送装置相关
     void setTeleportTarget(std::string target_map);
     void enableTeleporter();
     bool isTeleportEnabled();
-    
+
 private:
     //地图块是否可穿越
     bool flgPassBy;
     TRMapTileType type;
-    
+
     //传送相关
     std::string teleport_target;
     bool teleport_active;
-    
+
     //门相关
     bool door_open;
     TRTexture *dooropen_texture;
     TRTexture *doorclose_texture;
-    
-    
+
+
 };
 
 #endif /* TRMapTile_hpp */

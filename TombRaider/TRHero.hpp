@@ -36,14 +36,24 @@ public:
     void setVelocity(int nvel);
     void setArmour(int narm);
     void setDamage(int ndmg);
+    void setTreasure(int treasure);
+    void setBulletNum(int bulletNum);
+    void setGotTheKey(bool haveGot);
+    void setZnum(int bigNum);
+    void setSandanNum(int sandan);
+    int getSandanNum();
     int getMaxHP();
     int getHP();
     int getVelocity();
     int getArmour();
     int getDamage();
+    int getTreasure();
+    int getBulletNum();
+    int getZnum();
+    bool getGotTheKey();
     //死亡
     void goDie();
-    
+
     //不良状态
     void debuff_Slow(int interval,int dmg);
     void debuff_Bleed(int interval,int dmg);
@@ -64,14 +74,14 @@ public:
     int rem_debuff_Freeze();
     bool is_debuff_Nogun();
     int rem_debuff_Nogun();
-    
+
     //开枪
     void fire();
     void fireDone();
     bool willFire();
     void setBulletKey(std::string key);
     std::string getBulletKey();
-    
+
     //移动
     void startMoveUp();
     void startMoveDown();
@@ -89,7 +99,7 @@ public:
     void attack(TREnemy *obj);
     //治疗
     void heal(int det);
-    
+
     //设定动画
     void setAttackingAnimator(TRAnimator *ani,TRDirection dir);
     void setWalkingAnimator(TRAnimator *ani,TRDirection dir);
@@ -108,39 +118,44 @@ public:
     bool isAttackingAnimated();
     bool isWalkingAnimated();
     bool isFiringAnimated();
-    
+
     //攻击范围判定
     void setAttackRangeFactor(double atkf);
     SDL_Rect getAttackRect();
-    
+
     //死亡画像
     void setDeathClip(SDL_Rect clipRect,TRDirection dir);
-    
+
     //渲染时函数，用来在每一帧确认状态
     void render();
-    
+
 private:
     //animator lockdown
     bool anilock;
     int anilockrem;
     void lock(int interval);
     void unlock();
-    
+
     //cool down
     int atk_cd;
     int atk_cd_rem;
     int fire_cd;
     int bullet_cd;
     int bullet_cd_rem;
-    
+
     //property
     int hp,mxhp,arm,dmg;
     int vel;
-    
+    int trea,bulletNum;
+    bool got;
+
+    int zNum;
+    int sandanNum;
+
     //status
     bool alive;
     bool attacking;
-    
+
     //animator
     bool standingAnimated;
     bool walkingAnimated;
@@ -150,7 +165,7 @@ private:
     TRAnimator *standingAnimator[4];
     TRAnimator *walkingAnimator[4];
     TRAnimator *firingAnimator[4];
-    
+
     //debuffs
     bool flgdebuff_slow;
     int debuff_slow_dmg;
@@ -162,17 +177,17 @@ private:
     int debuff_freeze_rem;
     bool flgdebuff_nogun;
     int debuff_nogun_rem;
-    
+
     //gun
     bool isFiring;
     std::string bul_key;
-    
+
     //death rect
     SDL_Rect deathRect[4];
-    
+
     //攻击范围系数
     double atkFactor;
-    
+
 };
 
 #endif /* TRHero_hpp */

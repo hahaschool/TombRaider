@@ -17,7 +17,7 @@
  载入怪物分布，设定好enemyList
  设定好Hero
  开始主循环
- 
+
  主循环流程：
  响应输入，给Hero单位发信
  所有单位move()
@@ -45,24 +45,71 @@ void TRGameController::initialize(){
     enemyTextureArray.clear();
     bulletTextureArray.clear();
     heroTextureArray.clear();
+    interfaceTextureArray.clear();
     defaultEnemyMap.clear();
     defaultHeroMap.clear();
-    defaultHpMap.clear();
     defaultItemMap.clear();
     defaultTrapMap.clear();
+    defaultInterfaceMap.clear();
 }
 
 void TRGameController::clearStage(){
     //仅清理和游戏活动有关的项目
+    for(std::list<TREnemy*>::iterator it = gEnemyList.begin(); it != gEnemyList.end(); it++){
+        delete *it;
+    }
+    for(std::list<TRBullet*>::iterator it = gBulletList.begin(); it != gBulletList.end(); it++){
+        delete *it;
+    }
+    for(std::list<TRItem*>::iterator it = gItemList.begin(); it != gItemList.end(); it++){
+        delete *it;
+    }
+    for(std::list<TRTrap*>::iterator it = gTrapList.begin(); it != gTrapList.end(); it++){
+        delete *it;
+    }
+    for(std::list<TRMapTile*>::iterator it = gMapTileList.begin(); it != gMapTileList.end(); it++){
+        delete *it;
+    }
+    for (std::list<TRInterface*>::iterator it = gInterfaceList.begin(); it != gInterfaceList.end(); it++) {
+        delete *it;
+    }
     gMapTileList.clear();
     gEnemyList.clear();
     gBulletList.clear();
     gItemList.clear();
     gTrapList.clear();
+    gInterfaceList.clear();
 }
 
 #pragma mark - 文件读入
 #pragma mark 读入及解析地图文件
+void TRGameController::loadLeadingMapFromFile(std::string path){
+    std::ifstream ifs;
+    ifs.open(path);
+    int n,m;
+    ifs>>n>>m;
+    gLeadingMapBox.h=n*3;
+    gLeadingMapBox.w=m*3;
+    for(int i=0;i<n;i++){
+        for(int j=0;j<m;j++){
+            char a;
+            ifs>>a;
+            if(a=='o'){
+                //createLeadingMapOut(j*2,i*2,2,2);
+                outX = j;
+                outY = i;
+            }else if(a=='k'){
+                //createLeadingMapKey(j*2,i*2,2,2);
+                keyX = j;
+                keyY = i;
+            }else if(a=='0'||a=='i'||a=='b'){
+                createLeadingMapOthers(j*3,i*3,3,3);
+            }
+        }
+    }
+    ifs.close();
+}
+
 void TRGameController::loadMapFromFile(std::string path){
     std::ifstream ifs;
     ifs.open(path);
@@ -75,6 +122,11 @@ void TRGameController::loadMapFromFile(std::string path){
     gGrider->gridHeight = n;
     gGrider->gridWidth = m;
     gPathFinder->init(n, m, 10);
+    createMapTile("background7",TRMapTileTypeGround,0,0,1500,1500);
+    createInterface("interface/treasure/gold",15,720,30,30,TRInterfaceTypeTreasure);
+    createInterface("interface/bullet/superpack",165,720,30,30,TRInterfaceTypeBullet);
+    if(hero == NULL) createHero("hahaschool", 50, 50, 48, 32);
+    else hero->setX(50),hero->setY(50);
     for(int i = 0; i < n; i++){
         for(int j = 0; j < m; j++){
             char a;
@@ -127,6 +179,12 @@ void TRGameController::loadMapFromFile(std::string path){
                 case 'g':
                     createEnemy("guard",j*50,i*50,50,37.5);
                     break;
+                case 'd':
+                    createTrap("trap/bleed/dilei",j*50,i*50,50,50);
+                    break;
+                case 's':
+                    createItem("item/sandanqiang/gun2",j*50,i*50,50,100);
+                    break;
                 case 'p':
                     //createEnemy("pharaoh",j*50,i*50,50,50);
                     break;
@@ -147,6 +205,7 @@ void TRGameController::loadTexture(){
     loadTextureEnemy();
     loadTextureHero();
     loadTextureBullet();
+    loadTextureInterface();
 }
 
 #pragma mark 读入地图块材质
@@ -241,6 +300,27 @@ void TRGameController::loadTextureBullet(){
     ifs.close();
 }
 
+void TRGameController::loadTextureInterface(){
+    std::ifstream ifs("Resources/Config/Texture_Interface.cfg");
+    int n;
+    while(ifs.peek()=='/'){
+        std::string filter;
+        std::getline(ifs,filter);
+    }
+    ifs >> n;
+    interfaceTextureArray.resize(n+1);
+    for(int i = 1; i <= n; i++){
+        int id;
+        std::string name,path;
+        TRTexture *tex = new TRTexture;
+        tex->linkRenderer(gRenderer);
+        ifs >> id >> name >> path;
+        tex->loadFromFile(path);
+        interfaceTextureArray[id] = tex;
+        gTextureKeyMap[name] = tex;
+    }
+    ifs.close();
+}
 #pragma mark 读入默认值 总方法
 void TRGameController::loadDefault(){
     loadDefaultAnimator();
@@ -250,6 +330,7 @@ void TRGameController::loadDefault(){
     loadDefaultItem();
     loadDefaultTrap();
     loadDefaultBullet();
+    loadDefaultInterface();
 }
 
 #pragma mark 读入动画器默认值
@@ -366,7 +447,7 @@ void TRGameController::loadDefaultEnemy(){
             }else if(flg == "follow"){
                 enm -> setFollowMode(true);
             }
-            
+
             ifs >> bname >> bcd;
             enm -> setBulletKey(bname);
             enm -> setFireCooldown(bcd);
@@ -392,18 +473,28 @@ void TRGameController::loadDefaultHero(){
         ho -> linkLevelRect(&gLevelBox);
         ifs >> id >> name;
         defaultHeroMap[name] = ho;
-        int hp,arm,dmg,vel,cd;
-        std::string bname;
-        ifs >> hp >> arm >> dmg >> vel >> cd >> bname;
+        int hp,arm,dmg,vel,cd,treasure,bulletNum,zNum;
+        std::string bname,flg;
+        ifs >> hp >> arm >> dmg >> vel >> cd >> treasure >> bulletNum >> zNum >> flg >> bname;
         ho -> setHP(hp);
         ho -> setMaxHP(hp);
         ho -> setVelocity(vel);
         ho -> setDamage(dmg);
         ho -> setAttackCD(cd);
         ho -> setArmour(arm);
+        ho -> setTreasure(treasure);
+        ho -> setBulletNum(bulletNum);
         ho -> setBulletKey(bname);
+        ho -> setZnum(zNum);
         ho -> setAttackRangeFactor(0.8);
         ho -> setColliderFactor(0.8);
+        if(flg == "yes")
+        {
+            ho->setGotTheKey(true);
+        }else
+        {
+            ho->setGotTheKey(false);
+        }
         ifs >> name;
         ho -> linkTexture(gTextureKeyMap[name]);
         for(int j = 0; j < 4; j++){
@@ -416,7 +507,6 @@ void TRGameController::loadDefaultHero(){
             ifs >> x >> y >> h >> w;
             ho -> setDeathClip({x,y,w,h}, (TRDirection)j);
         }
-        std::string flg;
         ifs >> flg;
         if(flg == "yes"){
             ho -> setWalkingAnimated(true);
@@ -519,8 +609,45 @@ void TRGameController::loadDefaultItem(){
             ndt -> setItemType(TRItemKey);
         }else if(type == "TREASURE"){
             ndt -> setItemType(TRItemTreasure);
+        }else if(type == "GUN"){
+            ndt->setItemType(TRItemGun2);
+            int sandanNum;
+            ifs >> sandanNum;
+            ndt->setSandanValue(sandanNum);
         }
         defaultItemMap[name] = ndt;
+    }
+    ifs.close();
+}
+
+#pragma mark 读入界面默认值
+void TRGameController::loadDefaultInterface(){
+    std::ifstream ifs("Resources/Config/Interface.cfg");
+    int n;
+    while(ifs.peek()=='/'){
+        std::string filter;
+        std::getline(ifs,filter);
+    }
+    ifs >> n;
+    for(int i = 1; i <= n; i++){
+        int id,ww,hh;
+        std::string name,tname,type;
+        ifs >> id >> name >> tname >> ww >> hh >> type;
+        TRInterface *itf = new TRInterface;
+        itf->linkTexture(gTextureKeyMap[tname]);
+        itf->setWidth(ww);
+        itf->setHeight(hh);
+        itf->setCurClip({0,0,ww,hh});
+        if(type == "BULLET"){
+            itf->setInterfaceType(TRInterfaceTypeBullet);
+        }else if(type=="TREASURE"){
+            itf->setInterfaceType(TRInterfaceTypeTreasure);
+        }else if(type=="KEY"){
+            itf->setInterfaceType(TRInterfaceTypeKey);
+        }else if(type == "LOWSPEED"){
+            itf->setInterfaceType(TRInterfaceTypeLowspeed);
+        }
+        defaultInterfaceMap[name] = itf;
     }
     ifs.close();
 }
@@ -584,6 +711,7 @@ void TRGameController::loadDefaultTrap(){
             }else{
                 ntr -> setType(TRTrapNoGun | TRTrapLasting);
                 int sleeptime,arg2;
+                ifs >> sleeptime >> arg2;
                 ntr -> setSleepTime(sleeptime);
                 ntr -> setDebuffInterval(arg2);
             }
@@ -672,8 +800,11 @@ void TRGameController::handleEvent(SDL_Event &e){
                     hero -> startMoveRight();
                     break;
                 case SDLK_z:
-                    flgAttackPerformed = hero -> performAttack();
-                    gBgm->playMusic("Resources/Bgm/hero_battle.wav",true);
+                    if(hero->getZnum()>0){
+                        flgAttackPerformed = hero -> performAttack();
+                        gBgm->playMusic("Resources/Bgm/hero_battle.wav",true);
+                        hero->setZnum(hero->getZnum()-1);
+                    }
                     break;
                 case SDLK_x:
                     hero -> fire();
@@ -704,6 +835,7 @@ void TRGameController::handleEvent(SDL_Event &e){
 }
 
 #pragma mark 执行每画幅需要的运算
+
 void TRGameController::runFrame(){
     if (isGamePausing()) {
         //Do something about pause
@@ -712,9 +844,9 @@ void TRGameController::runFrame(){
     if(!isGameRunning()){
         return;
     }
-    
-    printf("HP : %d\n",hero->getHP());
-    
+
+    //printf("HP : %d\n",hero->getHP());
+
     //Calculate enemy's moving
     for(std::list<TREnemy*>::iterator it = gEnemyList.begin(); it != gEnemyList.end(); it++){
         (*it) -> move();
@@ -727,27 +859,48 @@ void TRGameController::runFrame(){
     //Calculate Hero's moving
     hero -> move();
     for(std::list<TRMapTile*>::iterator itt = gMapTileList.begin();itt != gMapTileList.end();itt++){
+        if((*itt)->getType() == TRMapTileTypeTeleport && checkCollision(hero->getBoxRect(), (*itt)->getColliderRect()))
+        {
+            if(keyBePicked==true)
+            {
+                nextMap(++mapID);
+                keyBePicked = false;
+                return;
+            }
+        }
         if(!((*itt)->isPassBy()) && checkCollision(hero->getBoxRect(), (*itt)->getColliderRect())) {
             hero -> undo();
             break;
         }
     }
-    
+
     //Calculate Hero's Contact w/ Items
     if (willPickupItem) {
         for(std::list<TRItem*>::iterator it = gItemList.begin();it != gItemList.end();it++){
             if (checkCollision((*it) -> getBoxRect(), hero -> getAttackRect())) {
+                if((*it)->getItemType()==TRItemKey)
+                {
+                    createInterface("interface/key/havegot",315,720,30,30,TRInterfaceTypeKey);
+                    keyBePicked = true;
+                }
+                if((*it)->getItemType()==TRItemGun2)
+                {
+                    hero->setSandanNum(50);
+                    createInterface("interface/gun2/sandanqiang",650,720,50,30,TRInterfaceTypeGUN2);
+                    loadAndRenderFont(font,"Resources/MTCORSVA.ttf",28,changeIntToString(hero->getSandanNum()),textColor,700,720);
+                }
                 (*it) -> activate();
+                delete *it;
                 gItemList.erase(it);
                 break;
             }
         }
     }willPickupItem = false;
-    
-    
+
+
     //Refocus the camera
     centerCameraByObject(hero);
-    
+
     //Calculate Bullets
     //Hero firing bullets
     if(hero -> willFire()){
@@ -780,6 +933,7 @@ void TRGameController::runFrame(){
                 }
             }
             if((*it) -> isUsed()){
+                delete *it;
                 gBulletList.erase(it);
                 break;
             }
@@ -787,20 +941,22 @@ void TRGameController::runFrame(){
             //Check collide with hero
             if(checkCollision(hero -> getColliderRect(), (*it) -> getBoxRect())){
                 (*it) -> attackHero(hero);
+                delete *it;
                 gBulletList.erase(it);
                 break;
             }
         }
-        
+
         //check collide with wall
         for(std::list<TRMapTile*>::iterator itt = gMapTileList.begin();itt != gMapTileList.end();itt++){
             if(!(*itt)->isPassBy() && checkCollision((*it) -> getBoxRect(), (*itt) -> getBoxRect())){
+                delete *it;
                 gBulletList.erase(it);
                 break;
             }
         }
     }
-    
+
     //Calculate Attacks
     if (flgAttackPerformed) {
         for(std::list<TREnemy*>::iterator it = gEnemyList.begin(); it != gEnemyList.end(); it++){
@@ -810,7 +966,7 @@ void TRGameController::runFrame(){
         }
         flgAttackPerformed = false;
     }
-    
+
     //Calculate Being Attacks
     for(std::list<TREnemy*>::iterator it = gEnemyList.begin(); it != gEnemyList.end(); it++){
         if (checkCollision(hero->getBoxRect(), (*it)->getBoxRect())) {
@@ -819,27 +975,34 @@ void TRGameController::runFrame(){
             }
         }
     }
-    
+
     //Delete dead Enemys
     for(std::list<TREnemy*>::iterator it = gEnemyList.begin(); it != gEnemyList.end(); it++){
         if(!(*it)->isAlive()){
+            delete *it;
             gEnemyList.erase(it);
             it--;
         }
     }
-    
+
     //Check Traps
     for(std::list<TRTrap*>::iterator it = gTrapList.begin();it != gTrapList.end();it++){
         if (checkCollision(hero->getBoxRect(), (*it)->getColliderRect())) {
+            if( (*it) -> getType() == TRTrapSlow | TRTrapLasting && haveBeenSlow == false )
+            {
+                createInterface("interface/lowspeed/limittime",465,720,30,30,TRInterfaceTypeLowspeed);
+                std::cerr<<"yes"<<endl;
+                haveBeenSlow = true;
+            }
             (*it) -> activate();
         }
     }
-    
+
     //Calculate debuffs
-    
-    
+
+
     //Render all
-    
+
     for(std::list<TRMapTile*>::iterator it = gMapTileList.begin();it != gMapTileList.end();it++){
         (*it) -> render();
     }
@@ -858,8 +1021,51 @@ void TRGameController::runFrame(){
     for(std::list<TREnemy*>::iterator it = gEnemyList.begin(); it != gEnemyList.end(); it++){
         (*it) -> render();
     }
+    for(std::list<TRInterface*>::iterator it = gInterfaceList.begin(); it != gInterfaceList.end(); it++){
+        /*if((*it)->getInterfaceType()==TRInterfaceTypeLowspeed)
+        {
+            if(a==60)
+            {
+                (*it)->render();
+                a=0;
+            }
+        }else if((*it)->getInterfaceType()==TRInterfaceTypeKey){
+            if(b==100)
+            {
+                (*it)->render();
+                b=0;
+            }
+        }*/
+            if((*it)->getInterfaceType()==TRInterfaceTypeLowspeed)
+            {
+                if(c==0)
+                {
+                    delete *it;
+                    gInterfaceList.erase(it);
+                    haveBeenSlow = false;
+                    c = 780;
+                }else{
+                    loadAndRenderFont(font,"Resources/MTCORSVA.ttf",32,changeIntToString(c/60),textColor,500,720);
+                    c--;
+                    (*it) -> render();
+                }
+            }
+            (*it) -> render();
+            a+=1;
+            b+=1;
+    }
+    loadAndRenderFont(font,"Resources/MTCORSVA.ttf",28,"BOOM:"+changeIntToString(hero->getZnum()),textColor,800,720);
+    loadAndRenderFont(font,"Resources/MTCORSVA.ttf",28,changeIntToString(hero->getTreasure()),textColor,50,720);
+    loadAndRenderFont(font,"Resources/MTCORSVA.ttf",28,changeIntToString(hero->getBulletNum()),textColor,200,720);
     hero -> render();
-    
+
+    d++;
+    if(d==1800)
+    {
+        d=0;
+        hero->setZnum(hero->getZnum()+1);
+    }
+
     //Render HP Gauge
     for(std::list<TREnemy*>::iterator it = gEnemyList.begin();it != gEnemyList.end();it++){
         SDL_Rect outer = {(*it)->getX()-gCameraBox.x,(*it)->getY()-5-gCameraBox.y,(*it)->getWidth(),3};
@@ -868,12 +1074,72 @@ void TRGameController::runFrame(){
         SDL_RenderFillRect(gRenderer, &inner);
         SDL_RenderDrawRect(gRenderer, &outer);
     }
+
+    //小地图
+    SDL_SetRenderDrawColor(gRenderer,0,0,0,0);
+    SDL_RenderFillRect(gRenderer,&gLeadingMapBox);
+    if(!keyBePicked){
+        loadAndRenderFont(font,"Resources/MTCORSVA.ttf",10,"k",textColor,keyX*3,keyY*3);
+    }
+    loadAndRenderFont(font,"Resources/MTCORSVA.ttf",10,"o",textColor,(outX)*3,(outY-1)*3);
+    /*for(std::list<SDL_Rect*>::iterator it = gLeadingMapList.begin();it!=gLeadingMapList.end();it++){
+        //SDL_SetRenderDrawColor(gRenderer,0xff,255,255,255);
+        SDL_RenderFillRect(gRenderer,*it);
+    }*/
+    //小地图英雄定位
+    heroX = hero->getX()/50;
+    heroY = hero->getY()/50;
+    heroLeadingPisition = {heroX*3,heroY*3,3,3};
+    SDL_SetRenderDrawColor(gRenderer,0xff,0,255,0);
+    SDL_RenderFillRect(gRenderer,&heroLeadingPisition);
+
+    //Calculate hero's hp
+    int hp = hero->getHP();
+    int maxHp = hero->getMaxHP();
+    hpRect.w = hp/(double)(maxHp/70);
+    hpRect.x = hero->getX()-gCameraBox.x-15;
+    hpRect.y = hero->getY()-gCameraBox.y-5;
+    hpOutlineRect.x = hpRect.x;
+    hpOutlineRect.y = hpRect.y;
+    hpOutlineRect.w = 70;
+    hpRect.h = hpOutlineRect.h = 4;
+    if(hp==0)hpRect.w=0;
+    SDL_SetRenderDrawColor(gRenderer,0xFF,0x00,0x00,0xFF);
+    SDL_RenderFillRect(gRenderer,&hpRect);
+    SDL_RenderDrawRect(gRenderer,&hpOutlineRect);
+
 }
 
+string TRGameController::changeIntToString(int n)
+{
+    sprintf(t,"%d",n);
+    s = t;
+    return s;
+}
+
+void TRGameController::loadAndRenderFont(TTF_Font *ft,std::string path,int fontSize,std::string text,SDL_Color textColor,int x,int y)
+{
+    if(font == NULL) font = TTF_OpenFont(path.c_str(),fontSize);
+    if(font == NULL){
+        printf("Failed to load the font!SDL_ttf Error:%s\n",TTF_GetError());
+    }else{
+        gTexture->linkFont(font);
+        gTexture->linkRenderer(gRenderer);
+        if(!gTexture->loadFromRenderedText(text,textColor)){
+            printf("Failed to render text texture!\n");
+        }else{
+            gTexture->render(x,y);
+        }
+    }
+    TTF_CloseFont(font),font = NULL;
+}
 
 TRGameController::TRGameController(){
     gLevelBox = {0,0,1920,1080};
     keyCnt = 0;
+    hero = NULL;
+    font = NULL;
+    initialize();
 }
 
 TRGameController::~TRGameController(){
@@ -1007,18 +1273,50 @@ void TRGameController::createBullet(std::string defaultKey, int x, int y, TRBull
     gBulletList.insert(gBulletList.end(), cbl);
 }
 
+#pragma mark 创建界面
+void TRGameController::createInterface(std::string defaultKey,int x,int y,int h,int w,TRInterfaceType typ){
+    TRInterface *interface = new TRInterface;
+    *interface = *defaultInterfaceMap[defaultKey];
+    interface->setX(x);
+    interface->setY(y);
+    interface->setHeight(h);
+    interface->setWidth(w);
+    gInterfaceList.insert(gInterfaceList.end(),interface);
+}
+
+#pragma mark 创建小地图
+void TRGameController::createLeadingMapOthers(int x,int y,int h,int w){
+    SDL_Rect leadingMapTileRect;
+    leadingMapTileRect.x = x;
+    leadingMapTileRect.y = y;
+    leadingMapTileRect.h = h;
+    leadingMapTileRect.w = w;
+    gLeadingMapList.insert(gLeadingMapList.end(),&leadingMapTileRect);
+}
 
 #pragma mark - 游戏过程控制
 #pragma mark 切换地图
-void TRGameController::nextMap()
+void TRGameController::nextMap(int mapID)
 {
-    //this->loadMapFromFile();
+    //free();
+    std::string pathP1 = "Resources/Mapdata/map";
+    char pathP2_[20];
+    sprintf(pathP2_, "%d",mapID);
+    string pathP2(pathP2_);
+    std::string pathP3 = ".map";
+    pauseGame();
+    clearStage();
+    loadMapFromFile(pathP1+pathP2+pathP3);
+    loadLeadingMapFromFile(pathP1+pathP2+pathP3);
+    resumeGame();
 }
 
 #pragma mark 开始游戏
 void TRGameController::startGame(){
     flgGameStarted = true;
     flgGamePaused = false;
+    loadMapFromFile("Resources/Mapdata/map1.map");
+    loadLeadingMapFromFile("Resources/Mapdata/map1.map");
 }
 
 #pragma mark 暂停游戏
@@ -1068,19 +1366,19 @@ bool TRGameController::checkCollision(SDL_Rect a, SDL_Rect b){
     int rightA, rightB;
     int topA, topB;
     int bottomA, bottomB;
-    
+
     //Calculate the sides of rect A
     leftA = a.x;
     rightA = a.x + a.w;
     topA = a.y;
     bottomA = a.y + a.h;
-    
+
     //Calculate the sides of rect B
     leftB = b.x;
     rightB = b.x + b.w;
     topB = b.y;
     bottomB = b.y + b.h;
-    
+
     //If any of the sides from A are outside of B
     if( bottomA <= topB ){
         return false;
@@ -1094,7 +1392,7 @@ bool TRGameController::checkCollision(SDL_Rect a, SDL_Rect b){
     if( leftA >= rightB ){
         return false;
     }
-    
+
     //If none of the sides from A are outside B
     return true;
 }

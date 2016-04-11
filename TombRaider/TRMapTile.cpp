@@ -33,6 +33,13 @@ void TRMapTile::setType(TRMapTileType typ){
         setPassBy(false);
         return;
     }
+    if(typ == TRMapTileTypeTeleport){
+        setPassBy(true);
+        return;
+    }
+}
+TRMapTileType TRMapTile::getType(){
+    return type;
 }
 
 void TRMapTile::openDoor(){

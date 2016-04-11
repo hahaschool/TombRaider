@@ -9,9 +9,9 @@
 #include "TRTexture.hpp"
 
 TRTexture::TRTexture(){
-#ifdef _SDL_TTF_H
+//#ifdef _SDL_TTF_H
     mFont = NULL;
-#endif
+//#endif
     mRenderer = NULL;
     mTexture = NULL;
     mWidth = 0;
@@ -43,7 +43,7 @@ bool TRTexture::loadFromFile(std::string path,Uint8 keyRed,Uint8 keyGreen,Uint8 
     return mTexture != NULL;
 }
 
-#ifdef _SDL_TTF_H
+//#ifdef _SDL_TTF_H
 bool TRTexture::loadFromRenderedText(std::string renderedText, SDL_Color textColor){
     free();
     SDL_Surface *loadedSurface = TTF_RenderText_Solid(mFont, renderedText.c_str(), textColor);
@@ -59,10 +59,11 @@ bool TRTexture::loadFromRenderedText(std::string renderedText, SDL_Color textCol
             mWidth = loadedSurface->w;
             mHeight = loadedSurface->h;
         }
+        SDL_FreeSurface(loadedSurface);
     }
     return mTexture != NULL;
 }
-#endif
+//#endif
 
 void TRTexture::free(){
     if(mTexture != NULL){
@@ -109,8 +110,8 @@ void TRTexture::linkRenderer(SDL_Renderer *renderer){
     mRenderer = renderer;
 }
 
-#ifdef _SDL_TTF_H
+//#ifdef _SDL_TTF_H
 void TRTexture::linkFont(TTF_Font *font){
     mFont = font;
 }
-#endif
+//#endif

@@ -14,8 +14,16 @@ TRBullet::TRBullet(){
     type = TRBulletFriendly;
     used = false;
     dmg = vel = 0;
+    memset(animator, 0, sizeof(animator));
 }
-
+TRBullet::~TRBullet(){
+    for (int i = 0; i < 4; i++) {
+        if (animator[i]) {
+            delete animator[i];
+            animator[i] = NULL;
+        }
+    }
+}
 #pragma mark - 属性
 int TRBullet::getSpeed(){
     return vel;

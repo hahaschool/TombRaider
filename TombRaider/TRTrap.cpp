@@ -38,6 +38,11 @@ void TRTrap::setType(int typ){
         debuff_interval = 2;
     }
 }
+#pragma mark - 返回陷阱类型
+int TRTrap::getType()
+{
+    return type;
+}
 #pragma mark 设定不良状态施加时间
 void TRTrap::setDebuffInterval(int interval){
     debuff_interval = interval;

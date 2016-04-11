@@ -51,6 +51,24 @@ void TRHero::setDamage(int ndmg){
     dmg = ndmg;
 }
 
+void TRHero::setTreasure(int treasure){
+    trea = treasure;
+}
+
+void TRHero::setBulletNum(int bullet){
+    bulletNum = bullet;
+}
+
+void TRHero::setGotTheKey(bool haveGot)
+{
+    got = haveGot;
+}
+
+bool TRHero::getGotTheKey()
+{
+    return got;
+}
+
 int TRHero::getMaxHP(){
     return mxhp;
 }
@@ -69,6 +87,31 @@ int TRHero::getArmour(){
 
 int TRHero::getDamage(){
     return dmg;
+}
+
+int TRHero::getTreasure(){
+    return trea;
+}
+
+int TRHero::getBulletNum(){
+    return bulletNum;
+}
+
+void TRHero::setZnum(int bigNum){
+    zNum = bigNum;
+}
+
+int TRHero::getZnum()
+{
+    return zNum;
+}
+
+int TRHero::getSandanNum(){
+    return sandanNum;
+}
+
+void TRHero::setSandanNum(int sandan){
+    sandanNum = sandan;
 }
 
 #pragma mark - 死亡
@@ -102,7 +145,7 @@ void TRHero::beAttacked(int dmg){
 #pragma mark - 攻击
 
 bool TRHero::performAttack(){
-    if(!flgdebuff_freeze && atk_cd_rem <= 0){
+    if(!flgdebuff_freeze && atk_cd_rem <= 0 && zNum > 0){
         if(isAttackingAnimated()){
             linkAttackingAnimator();
             lock(atk_cd);
@@ -237,9 +280,10 @@ void TRHero::debuff_clear(){
 
 #pragma mark - 远程攻击
 void TRHero::fire(){
-    if(!flgdebuff_nogun && bullet_cd_rem <= 0){
+    if(!flgdebuff_nogun && bullet_cd_rem <= 0 && bulletNum > 0){
         isFiring = true;
         bullet_cd_rem = bullet_cd;
+        bulletNum--;
     }
 }
 
@@ -326,6 +370,7 @@ void TRHero::move(){
         if (debuff_bleed_rem <= 0) {
             debuff_Bleed_clear();
         }
+        if(getHP() < 0) goDie(),debuff_Bleed_clear();
     }
     if(is_debuff_Freeze()){
         freeze();

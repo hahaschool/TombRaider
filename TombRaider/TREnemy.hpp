@@ -22,7 +22,7 @@
  1.配置好属性，贴图
  2.使用isAlive()确认死活
  3.攻击时，调用startAttack()激活动画,返回的是这一轮能不能攻击，攻击结束后自动回复走动状态
- 
+
  */
 
 enum TREnemyType{
@@ -46,11 +46,11 @@ public:
     void setAttackingAnimator(TRAnimator *ani,TRDirection dir);
     void linkAttackingAnimator();
     void setDeathClip(SDL_Rect clipRect,TRDirection dir);
-    
+
     //属性
     void setType(TREnemyType ntype);
     void setHP(int nhp);
-    void setMaxHP(int mhp);
+    void setMaxHP(int nhp);
     void setDamage(int ndmg);
     void setArmour(int narm);
     void setSpeed(int nvel);
@@ -62,37 +62,37 @@ public:
     int getArmor();
     int getSpeed();
     int getAttackCD();
-    
+
     //死亡
     void goDie();
     bool isAlive();
-    
+
     //攻击
     void beAttacked(int dmg);
     void attack(TRHero* obj,int dmg);
     bool startAttacking();
     void endAttacking();
-    
+
     //移动
     void startMoving();
     void endMoving();
     void moveRandom();
     void moveAlongPath();
     void move();
-    
+
     //维护路径
     void clearRoute();
     void planRoute(bool force);
-    
-    
+
+
     //链接英雄单位,辅助对象
     void linkHero(TRHero *nhero);
     void linkGrider(TRGrider *ngrider);
     void linkPathFinder(TRPathFinder *npathfinder);
-    
+
     //渲染函数
     void render();
-    
+
     //炮塔相关设定
     void setTurretMode(bool flg);
     bool willFire();
@@ -104,45 +104,45 @@ public:
     void setFollowMode(bool flg);
     bool isFollowMode();
     std::string getBulletKey();
-    
+
+
 private:
     int randrem;
-    
-    TREnemyType type;
+
     int maxHP;
+    TREnemyType type;
+
     //animator lock
     bool anilock;
     int anilockrem;
     void lock(int interval);
     void unlock();
-    
+
     int atk_cd;
     int atk_cd_rem;
-    
+
     int hp,dmg,arm,vel;
     bool alive;
     bool chasing;
-    
+
     int prv_hero_x,prv_hero_y;
-    
+
     //贴图
     SDL_Rect deathClip[4];
     bool walkingAnimated;
     TRAnimator *walkingAnimator[4];
     bool attackingAnimated;
     TRAnimator *attackingAnimator[4];
-    
-    //Turret Configuration
+
     bool turretMode;
     bool flgFollowMode;
     bool flgfire;
     bool canfire[4];
     int bul_cd_rem,bul_cd;
     std::string bulKey;
-    
     //维护路径
     std::queue<std::pair<int,int> > path;
-    
+
     TRHero *hero;
     TRPathFinder *pathFinder;
     TRGrider *grider;

@@ -16,6 +16,7 @@ TREnemy::TREnemy(){
     chasing = false;
     turretMode = false;
     flgFollowMode = false;
+    randrem = 0;
 }
 
 #pragma mark - 贴图和动画配置
@@ -156,7 +157,7 @@ void TREnemy::beAttacked(int dmg){
             goDie();
         }
     }
-    
+
 }
 
 #pragma mark - 攻击
@@ -408,6 +409,7 @@ bool TREnemy::canFireAt(TRDirection dir){
 void TREnemy::setFireCooldown(int intr){
     bul_cd = bul_cd_rem = intr;
 }
+
 
 #pragma mark - Animator Lockdown (PRIVATE)
 void TREnemy::lock(int interval){
