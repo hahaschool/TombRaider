@@ -12,6 +12,7 @@
 #include <SDL2_ttf/SDL_ttf.h>
 #include "TRGameController.hpp"
 #include "TRTimer.hpp"
+#include "TRBgm.h"
 #include <ctime>
 const int SCREEN_WIDTH = 900;
 const int SCREEN_HEIGHT = 750;
@@ -24,6 +25,29 @@ SDL_Renderer *gRenderer = NULL;
 TRPathFinder *gPathFinder = NULL;
 TRGrider *gGrider = NULL;
 TRGameController *gGameController = NULL;
+TRBgm *gBgm = NULL;
+SDL_Surface* gScreenScreen = NULL;
+SDL_Surface* gStartScreen = NULL;
+SDL_Surface* gEndScreen = NULL;
+SDL_Surface* gWinScreen = NULL;
+
+const char* ButtonFile[]={};
+SDL_Surface* ButtonSur=NULL;
+SDL_Texture* ButtonText=NULL;
+
+SDL_Rect StartButtonRect = {400,450,100,50};
+SDL_Rect PauseButtonRect = {400,550,100,50};
+SDL_Rect ExitButtonRect = {400,650,100,50};
+SDL_Event Mouse;
+
+using namespace std;
+
+bool UpdateButton(Uint32);
+bool isOnStartButton(Uint32,Uint32);
+bool isOnPauseButton(Uint32,Uint32);
+bool isOnExitButton(Uint32,Uint32);
+bool drawStartBackGround();
+void halt();
 
 bool init(){
     //初始化成功标志
@@ -35,6 +59,8 @@ bool init(){
 
     gPathFinder = new TRPathFinder;
 
+    
+   
 
 
     if( SDL_Init( SDL_INIT_VIDEO | SDL_INIT_AUDIO ) < 0 ){
@@ -51,8 +77,9 @@ bool init(){
             printf("Error:Window creation failed. SDL_Error: %s\n",SDL_GetError());
             success = false;
         }else{
+            gScreenScreen = SDL_GetWindowSurface(gWindow);
             //垂直同步
-            gRenderer = SDL_CreateRenderer(gWindow, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+            gRenderer = SDL_GetRenderer(gWindow);
             if(gRenderer == NULL){
                 printf("Error:Render Creation Failed.SDL_Error : %s\n",SDL_GetError());
                 success = false;
@@ -80,6 +107,21 @@ bool init(){
         }
     }
 
+    gStartScreen = SDL_LoadBMP("Resources/Texture/Maptile/begin.bmp");
+    gEndScreen = SDL_LoadBMP("Resources/Texture/Maptile/fail.bmp");
+    gWinScreen = SDL_LoadBMP("Resources/Texture/Maptile/win.bmp");
+    if(gStartScreen == NULL)
+    {
+        printf("Unable to load start image!",SDL_GetError());
+    }
+    if(gEndScreen == NULL)
+    {
+        printf("Unable to load end image!",SDL_GetError());
+    }
+    if(gWinScreen == NULL)
+    {
+        printf("Unable to load win image!",SDL_GetError());
+    }
     gGameController -> linkRenderer(gRenderer);
     gGameController -> setCamera(SCREEN_HEIGHT, SCREEN_WIDTH);
     gGameController -> linkGrider(gGrider);
@@ -95,6 +137,9 @@ bool init(){
 }
 
 void close(){
+    //free surface
+    SDL_FreeSurface(gStartScreen);
+    SDL_FreeSurface(gEndScreen);
     //Destroy window
     SDL_DestroyRenderer(gRenderer);
     SDL_DestroyWindow(gWindow);
@@ -107,6 +152,12 @@ void close(){
     SDL_Quit();
 }
 
+void halt(){
+    cerr<<SDL_GetError()<<endl;
+    close();
+    exit(-1);
+}
+
 int main(int argc,char * argv[]) {
     srand(time(NULL));
     if (!init()) {
@@ -115,19 +166,19 @@ int main(int argc,char * argv[]) {
         bool quit = false;
         SDL_Event e;
 
-        //dubug
-        //gGameController->createMapTile("background7",TRMapTileTypeGround,0,0,1500,1500);
+        SDL_BlitSurface(gStartScreen,NULL,gScreenScreen,NULL);
+        SDL_UpdateWindowSurface(gWindow);
+        gBgm->playMusic("Resources/Bgm/阴森.wav",true);
+        SDL_Delay(4000);
 
-        //gGameController -> createHero("hahaschool", 50, 50, 48, 32);
-        //gGameController->loadLeadingMapFromFile("Resources/Mapdata/map5.map");
-        //gGameController->loadMapFromFile("Resources/Mapdata/map5.map");
-        /*for(int i = 1; i <= 5; i++){
-            for(int j = 1; j<= 5; j++){
-                gGameController -> createEnemy("bat", 10*i+50, 10*j+50, 50, 50);
-            }
-        }*/
+
         gGameController -> startGame();
-
+        /*
+        //PRESSURE TEST BLK
+        for(int i = 1; i <= 10000;i++){
+            gGameController->createEnemy("bat", 101+rand()%50, 101+rand()%50, 50, 50);
+        }
+         */
         //The frames per second timer
         TRTimer fpsTimer;
 
@@ -144,6 +195,18 @@ int main(int argc,char * argv[]) {
             if(gGameController -> isGameRunning() == false){
                 quit = true;
             }
+            if(gGameController->isGameFail()==true){
+                SDL_BlitSurface(gEndScreen,NULL,gScreenScreen,NULL);
+                SDL_UpdateWindowSurface(gWindow);
+                SDL_Delay(4000);
+                quit = true;
+            }
+            if(gGameController->isGameWin()==true){
+                SDL_BlitSurface(gWinScreen,NULL,gScreenScreen,NULL);
+                SDL_UpdateWindowSurface(gWindow);
+                SDL_Delay(4000);
+                quit = true;
+            }
             gGameController -> handleEvent(e);
             //Calculate and correct fps
             float avgFPS = countedFrames / ( fpsTimer.getTicks() / 1000.f );
@@ -157,6 +220,7 @@ int main(int argc,char * argv[]) {
             SDL_RenderClear( gRenderer );
             gGameController -> runFrame();
             SDL_RenderPresent( gRenderer );
+
 
             //If frame finished early
             int frameTicks = capTimer.getTicks();

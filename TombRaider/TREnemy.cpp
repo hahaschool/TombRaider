@@ -246,7 +246,7 @@ void TREnemy::move(){
         if(type == TREnemyRandom){
             moveRandom();
         }else if(type == TREnemySmart){
-            if(std::abs(hero->getX()-getX()) + std::abs(hero->getY()-getY()) > 500){
+            if(std::abs(hero->getX()-getX()) + std::abs(hero->getY()-getY()) > 100+rand()%250){
                 clearRoute();
                 moveRandom();
             }else{

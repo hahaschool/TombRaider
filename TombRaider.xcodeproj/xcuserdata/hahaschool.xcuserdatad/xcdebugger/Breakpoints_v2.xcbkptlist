@@ -218,11 +218,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "TombRaider/TRGameController.cpp"
-            timestampString = "482001411.339301"
+            timestampString = "482152567.607428"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "706"
-            endingLineNumber = "706"
+            startingLineNumber = "718"
+            endingLineNumber = "718"
             landmarkName = "TRGameController::loadDefaultTrap()"
             landmarkType = "5">
          </BreakpointContent>
@@ -234,11 +234,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "TombRaider/TRGameController.cpp"
-            timestampString = "482001411.339301"
+            timestampString = "482152567.607428"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "520"
-            endingLineNumber = "520"
+            startingLineNumber = "532"
+            endingLineNumber = "532"
             landmarkName = "TRGameController::loadDefaultHero()"
             landmarkType = "5">
          </BreakpointContent>
@@ -255,7 +255,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "60"
             endingLineNumber = "60"
-            landmarkName = "render()"
+            landmarkName = "linkHero(TRHero *_hero)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -282,11 +282,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "TombRaider/TRGameController.cpp"
-            timestampString = "482002459.78295"
+            timestampString = "482152567.607428"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "753"
-            endingLineNumber = "753"
+            startingLineNumber = "765"
+            endingLineNumber = "765"
             landmarkName = "TRGameController::loadDefaultBullet()"
             landmarkType = "5">
          </BreakpointContent>
@@ -298,11 +298,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "TombRaider/TRGameController.cpp"
-            timestampString = "482002459.78295"
+            timestampString = "482152567.607428"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "752"
-            endingLineNumber = "752"
+            startingLineNumber = "764"
+            endingLineNumber = "764"
             landmarkName = "TRGameController::loadDefaultBullet()"
             landmarkType = "5">
          </BreakpointContent>
@@ -346,11 +346,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "TombRaider/TRGameController.cpp"
-            timestampString = "482001411.339301"
+            timestampString = "482152567.607428"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "557"
-            endingLineNumber = "557"
+            startingLineNumber = "569"
+            endingLineNumber = "569"
             landmarkName = "TRGameController::loadDefaultMaplist()"
             landmarkType = "5">
          </BreakpointContent>
@@ -362,11 +362,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "TombRaider/TRGameController.cpp"
-            timestampString = "482002459.78295"
+            timestampString = "482152567.607428"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "856"
-            endingLineNumber = "856"
+            startingLineNumber = "868"
+            endingLineNumber = "868"
             landmarkName = "TRGameController::runFrame()"
             landmarkType = "5">
          </BreakpointContent>
@@ -378,11 +378,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "TombRaider/TRGameController.cpp"
-            timestampString = "482002459.78295"
+            timestampString = "482152567.607428"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "855"
-            endingLineNumber = "855"
+            startingLineNumber = "867"
+            endingLineNumber = "867"
             landmarkName = "TRGameController::runFrame()"
             landmarkType = "5">
          </BreakpointContent>
@@ -394,11 +394,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "TombRaider/TRGameController.cpp"
-            timestampString = "482002459.78295"
+            timestampString = "482152567.607428"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "864"
-            endingLineNumber = "864"
+            startingLineNumber = "876"
+            endingLineNumber = "876"
             landmarkName = "TRGameController::runFrame()"
             landmarkType = "5">
          </BreakpointContent>
@@ -410,11 +410,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "TombRaider/TRGameController.cpp"
-            timestampString = "482001411.339301"
+            timestampString = "482152567.607428"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "371"
-            endingLineNumber = "371"
+            startingLineNumber = "383"
+            endingLineNumber = "383"
             landmarkName = "TRGameController::loadDefaultEnemy()"
             landmarkType = "5">
          </BreakpointContent>
@@ -426,11 +426,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "TombRaider/TRGameController.cpp"
-            timestampString = "482001411.339301"
+            timestampString = "482152567.607428"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "316"
-            endingLineNumber = "316"
+            startingLineNumber = "328"
+            endingLineNumber = "328"
             landmarkName = "TRGameController::loadTextureInterface()"
             landmarkType = "5">
          </BreakpointContent>
@@ -442,11 +442,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "TombRaider/TRGameController.cpp"
-            timestampString = "482001411.339301"
+            timestampString = "482152567.607428"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "322"
-            endingLineNumber = "322"
+            startingLineNumber = "334"
+            endingLineNumber = "334"
             landmarkName = "TRGameController::loadTextureInterface()"
             landmarkType = "5">
          </BreakpointContent>
@@ -458,11 +458,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "TombRaider/TRGameController.cpp"
-            timestampString = "482001411.339301"
+            timestampString = "482152567.607428"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "333"
-            endingLineNumber = "333"
+            startingLineNumber = "345"
+            endingLineNumber = "345"
             landmarkName = "TRGameController::loadDefault()"
             landmarkType = "5">
          </BreakpointContent>
@@ -474,11 +474,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "TombRaider/TRGameController.cpp"
-            timestampString = "482001411.339301"
+            timestampString = "482152567.607428"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "362"
-            endingLineNumber = "362"
+            startingLineNumber = "374"
+            endingLineNumber = "374"
             landmarkName = "TRGameController::loadDefaultAnimator()"
             landmarkType = "5">
          </BreakpointContent>
@@ -490,7 +490,23 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "TombRaider/TRGameController.cpp"
-            timestampString = "482001411.339301"
+            timestampString = "482152567.607428"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "364"
+            endingLineNumber = "364"
+            landmarkName = "TRGameController::loadDefaultAnimator()"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "TombRaider/TRGameController.cpp"
+            timestampString = "482152567.607428"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "352"
@@ -506,27 +522,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "TombRaider/TRGameController.cpp"
-            timestampString = "482001411.339301"
+            timestampString = "482152567.607428"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "340"
-            endingLineNumber = "340"
-            landmarkName = "TRGameController::loadDefaultAnimator()"
-            landmarkType = "5">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "TombRaider/TRGameController.cpp"
-            timestampString = "482001411.339301"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "395"
-            endingLineNumber = "395"
+            startingLineNumber = "407"
+            endingLineNumber = "407"
             landmarkName = "TRGameController::loadDefaultEnemy()"
             landmarkType = "5">
          </BreakpointContent>
@@ -538,11 +538,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "TombRaider/TRGameController.cpp"
-            timestampString = "482001411.339301"
+            timestampString = "482152567.607428"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "396"
-            endingLineNumber = "396"
+            startingLineNumber = "408"
+            endingLineNumber = "408"
             landmarkName = "TRGameController::loadDefaultEnemy()"
             landmarkType = "5">
          </BreakpointContent>
@@ -554,11 +554,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "TombRaider/TRGameController.cpp"
-            timestampString = "482002459.78295"
+            timestampString = "482152567.607428"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "891"
-            endingLineNumber = "891"
+            startingLineNumber = "903"
+            endingLineNumber = "903"
             landmarkName = "TRGameController::runFrame()"
             landmarkType = "5">
          </BreakpointContent>
@@ -634,12 +634,42 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "TombRaider/TRGameController.cpp"
-            timestampString = "482003294.53096"
+            timestampString = "482152567.607428"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1310"
-            endingLineNumber = "1310"
-            landmarkName = "TRGameController::nextMap(int mapID)"
+            startingLineNumber = "1322"
+            endingLineNumber = "1322">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "TombRaider/TRGameController.cpp"
+            timestampString = "482152567.607428"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "1135"
+            endingLineNumber = "1135"
+            landmarkName = "TRGameController::runFrame()"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "TombRaider/TRGameController.cpp"
+            timestampString = "482152567.607428"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "1134"
+            endingLineNumber = "1134"
+            landmarkName = "TRGameController::runFrame()"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
@@ -650,12 +680,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "TombRaider/main.cpp"
-            timestampString = "482002891.58454"
+            timestampString = "482153592.208214"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "158"
-            endingLineNumber = "158"
-            landmarkName = "main(int argc,char * argv[])"
+            startingLineNumber = "72"
+            endingLineNumber = "72"
+            landmarkName = "init()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -665,14 +695,14 @@
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "TombRaider/TRGameController.cpp"
-            timestampString = "482003535.795428"
+            filePath = "TombRaider/main.cpp"
+            timestampString = "482153592.208214"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1123"
-            endingLineNumber = "1123"
-            landmarkName = "TRGameController::loadAndRenderFont(TTF_Font *ft,std::string path,int fontSize,std::string text,SDL_Color textColor,int x,int y)"
-            landmarkType = "5">
+            startingLineNumber = "71"
+            endingLineNumber = "71"
+            landmarkName = "init()"
+            landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -681,14 +711,14 @@
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "TombRaider/TRGameController.cpp"
-            timestampString = "482003566.655363"
+            filePath = "TombRaider/main.cpp"
+            timestampString = "482153592.208214"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1122"
-            endingLineNumber = "1122"
-            landmarkName = "TRGameController::loadAndRenderFont(TTF_Font *ft,std::string path,int fontSize,std::string text,SDL_Color textColor,int x,int y)"
-            landmarkType = "5">
+            startingLineNumber = "101"
+            endingLineNumber = "101"
+            landmarkName = "init()"
+            landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>

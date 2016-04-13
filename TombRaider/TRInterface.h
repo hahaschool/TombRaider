@@ -14,7 +14,6 @@ enum TRInterfaceType{
 class TRInterface{
 public:
     TRInterface();
-    
     //属性
     int getMaxHp();
     int getX();

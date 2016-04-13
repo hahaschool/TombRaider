@@ -59,7 +59,6 @@ bool TRTexture::loadFromRenderedText(std::string renderedText, SDL_Color textCol
             mWidth = loadedSurface->w;
             mHeight = loadedSurface->h;
         }
-        SDL_FreeSurface(loadedSurface);
     }
     return mTexture != NULL;
 }

@@ -204,6 +204,9 @@ int TRHero::rem_debuff_Slow(){
     return debuff_slow_rem;
 }
 
+int TRHero::getDebuffSlow(){
+    return debuff_slow_rem;
+}
 #pragma mark 出血
 
 void TRHero::debuff_Bleed(int interval,int dmg){

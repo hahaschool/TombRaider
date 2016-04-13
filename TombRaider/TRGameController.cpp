@@ -125,7 +125,7 @@ void TRGameController::loadMapFromFile(std::string path){
     createMapTile("background7",TRMapTileTypeGround,0,0,1500,1500);
     createInterface("interface/treasure/gold",15,720,30,30,TRInterfaceTypeTreasure);
     createInterface("interface/bullet/superpack",165,720,30,30,TRInterfaceTypeBullet);
-    if(hero == NULL) createHero("hahaschool", 50, 50, 48, 32);
+    if(hero==NULL)createHero("hahaschool", 50, 50, 48, 32);
     else hero->setX(50),hero->setY(50);
     for(int i = 0; i < n; i++){
         for(int j = 0; j < m; j++){
@@ -149,27 +149,35 @@ void TRGameController::loadMapFromFile(std::string path){
                     gPathFinder->setMatrix(j,i,TRPathFinderMatrixRoad);
                     break;
                 case 'i':
+                    gPathFinder->setMatrix(j, i, TRPathFinderMatrixObstacle);
                     createMapTile("inside/iron",TRMapTileTypeWall, j*50, i*50, 50, 50);
                     break;
                 case '1':
                     gPathFinder->setMatrix(j, i, TRPathFinderMatrixRoad);
                     break;
                 case 'm':
-                    createMapTile("mummy",TRMapTileTypeGround, j*50, i*50, 50, 50);
+                    gPathFinder->setMatrix(j, i, TRPathFinderMatrixRoad);
+                    createEnemy("bat", j*50, i*50, 50, 50);
                     break;
                 case 'k':
+                    gPathFinder->setMatrix(j, i, TRPathFinderMatrixRoad);
                     createItem("item/key/gold", j*50, i*50, 40, 40);
+                    createEnemy("pharaoh",(j-1)*50,(i-1)*50,50,50);
                     break;
                 case '$':
+                    gPathFinder->setMatrix(j, i, TRPathFinderMatrixRoad);
                     createItem("item/treasure/gold", j*50, i*50, 40, 40);
                     break;
                 case 'r':
+                    gPathFinder->setMatrix(j, i, TRPathFinderMatrixRoad);
                     createItem("item/bullet/superpack", j*50, i*50, 50, 50);
                     break;
                 case '+':
+                    gPathFinder->setMatrix(j, i, TRPathFinderMatrixRoad);
                     createItem("item/heal/medicpack", j*50, i*50, 50, 50);
                     break;
                 case 'l':
+                    gPathFinder->setMatrix(j, i, TRPathFinderMatrixRoad);
                     createItem("item/heal/herb", j*50, i*50, 50, 50);
                     break;
                 case 'b':
@@ -177,16 +185,20 @@ void TRGameController::loadMapFromFile(std::string path){
                     createMapTile("map/brick",TRMapTileTypeWall, j*50, i*50, 50, 50);
                     break;
                 case 'g':
+                    gPathFinder->setMatrix(j, i, TRPathFinderMatrixRoad);
                     createEnemy("guard",j*50,i*50,50,37.5);
                     break;
                 case 'd':
+                    gPathFinder->setMatrix(j, i, TRPathFinderMatrixRoad);
                     createTrap("trap/bleed/dilei",j*50,i*50,50,50);
                     break;
                 case 's':
+                    gPathFinder->setMatrix(j, i, TRPathFinderMatrixRoad);
                     createItem("item/sandanqiang/gun2",j*50,i*50,50,100);
                     break;
                 case 'p':
-                    //createEnemy("pharaoh",j*50,i*50,50,50);
+                    gPathFinder->setMatrix(j, i, TRPathFinderMatrixRoad);
+                    createEnemy("mummy",j*50,i*50,50,50);
                     break;
             }
         }
@@ -711,7 +723,7 @@ void TRGameController::loadDefaultTrap(){
             }else{
                 ntr -> setType(TRTrapNoGun | TRTrapLasting);
                 int sleeptime,arg2;
-                ifs >> sleeptime >> arg2;
+                ifs>>sleeptime>>arg2;
                 ntr -> setSleepTime(sleeptime);
                 ntr -> setDebuffInterval(arg2);
             }
@@ -820,6 +832,10 @@ void TRGameController::handleEvent(SDL_Event &e){
                 case SDLK_DOWN:
                 case SDLK_LEFT:
                 case SDLK_RIGHT:
+                case SDLK_w:
+                case SDLK_s:
+                case SDLK_a:
+                case SDLK_d:
                     if(e.key.repeat == 0){
                         keyCnt--;
                     }
@@ -837,6 +853,11 @@ void TRGameController::handleEvent(SDL_Event &e){
 #pragma mark 执行每画幅需要的运算
 
 void TRGameController::runFrame(){
+    if(hero->getHP()==0)
+    {
+        SDL_Delay(1000);
+        flgGameFail = true;
+    }
     if (isGamePausing()) {
         //Do something about pause
         return;
@@ -866,6 +887,10 @@ void TRGameController::runFrame(){
                 nextMap(++mapID);
                 keyBePicked = false;
                 return;
+                if(mapID==21)
+                {
+                    flgGameWin = true;
+                }
             }
         }
         if(!((*itt)->isPassBy()) && checkCollision(hero->getBoxRect(), (*itt)->getColliderRect())) {
@@ -892,6 +917,7 @@ void TRGameController::runFrame(){
                 (*it) -> activate();
                 delete *it;
                 gItemList.erase(it);
+                gBgm->playMusic("Resources/Bgm/getSomething.wav",true);
                 break;
             }
         }
@@ -1038,7 +1064,7 @@ void TRGameController::runFrame(){
         }*/
             if((*it)->getInterfaceType()==TRInterfaceTypeLowspeed)
             {
-                if(c==0)
+                /*if(c==0)
                 {
                     delete *it;
                     gInterfaceList.erase(it);
@@ -1048,6 +1074,14 @@ void TRGameController::runFrame(){
                     loadAndRenderFont(font,"Resources/MTCORSVA.ttf",32,changeIntToString(c/60),textColor,500,720);
                     c--;
                     (*it) -> render();
+                }*/
+                if(hero->getDebuffSlow()==0)
+                {
+                    gInterfaceList.erase(it);
+                    haveBeenSlow = false;
+                }else{
+                    loadAndRenderFont(font,"Resources/MTCORSVA.ttf",32,changeIntToString(hero->getDebuffSlow()/60),textColor,500,720);
+                    (*it)->render();
                 }
             }
             (*it) -> render();
@@ -1064,6 +1098,7 @@ void TRGameController::runFrame(){
     {
         d=0;
         hero->setZnum(hero->getZnum()+1);
+        createEnemy("mummy",hero->getX(),hero->getY(),50,50);
     }
 
     //Render HP Gauge
@@ -1117,9 +1152,10 @@ string TRGameController::changeIntToString(int n)
     return s;
 }
 
-void TRGameController::loadAndRenderFont(TTF_Font *ft,std::string path,int fontSize,std::string text,SDL_Color textColor,int x,int y)
+void TRGameController::loadAndRenderFont(TTF_Font *font,std::string path,int fontSize,std::string text,SDL_Color textColor,int x,int y)
 {
-    if(font == NULL) font = TTF_OpenFont(path.c_str(),fontSize);
+    if(font == NULL)
+      font = TTF_OpenFont(path.c_str(),fontSize);
     if(font == NULL){
         printf("Failed to load the font!SDL_ttf Error:%s\n",TTF_GetError());
     }else{
@@ -1315,6 +1351,8 @@ void TRGameController::nextMap(int mapID)
 void TRGameController::startGame(){
     flgGameStarted = true;
     flgGamePaused = false;
+    flgGameWin = false;
+    flgGameFail = false;
     loadMapFromFile("Resources/Mapdata/map1.map");
     loadLeadingMapFromFile("Resources/Mapdata/map1.map");
 }
@@ -1339,6 +1377,19 @@ bool TRGameController::isGameRunning(){
     if(flgGameStarted && !flgGamePaused){
         return true;
     }
+    return false;
+}
+
+#pragma mark 检测游戏是否赢了
+bool TRGameController::isGameWin(){
+    if(flgGameWin)
+        return true;
+    return false;
+}
+#pragma mark 检测游戏是否输了
+bool TRGameController::isGameFail(){
+    if(flgGameFail)
+        return true;
     return false;
 }
 

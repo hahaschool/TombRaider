@@ -75,6 +75,8 @@ public:
     bool is_debuff_Nogun();
     int rem_debuff_Nogun();
 
+    int getDebuffSlow();
+
     //开枪
     void fire();
     void fireDone();

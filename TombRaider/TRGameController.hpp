@@ -98,6 +98,10 @@ public:
     void pauseGame();
     void resumeGame();
     bool isGamePausing();
+    //游戏胜利
+    bool isGameWin();
+    //游戏失败
+    bool isGameFail();
     //游戏结束
     void gameOver();
     //处理键盘事件
@@ -152,6 +156,8 @@ private:
 
     bool flgGameStarted;
     bool flgGamePaused;
+    bool flgGameWin;
+    bool flgGameFail;
 
     //地图文件和物体分布文件路径
     std::string pathMapFramework;
